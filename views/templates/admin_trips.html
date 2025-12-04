@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Chuyến xe - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar h1 a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-back {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .bulk-create-section {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .bulk-create-section h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-scheduled {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-running {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-action {
+            padding: 5px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.3s;
+            display: inline-block;
+            margin: 2px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #17a2b8;
+        }
+
+        .btn-toggle {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .btn-action:hover {
+            opacity: 0.8;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1><a href="/admin">🚌 Quản lý Chuyến xe</a></h1>
+        <div>
+            <span>👤 {{ user.username }}</span>
+            <a href="/logout" style="margin-left: 20px; color: white; text-decoration: none;">Đăng xuất</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="page-header">
+            <h2>📅 Quản lý Chuyến xe (Trips)</h2>
+            <div class="header-actions">
+                <a href="/admin/trips/create" class="btn btn-primary">➕ Tạo chuyến mới</a>
+                <a href="/admin/buses" class="btn btn-secondary">🚌 Quản lý Xe</a>
+                <a href="/admin" class="btn btn-back">← Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Thống kê -->
+        {% if stats %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number">{{ stats.total_trips or 0 }}</div>
+                <div class="label">Tổng chuyến</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.scheduled_trips or 0 }}</div>
+                <div class="label">Đã lên lịch</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.running_trips or 0 }}</div>
+                <div class="label">Đang chạy</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.completed_trips or 0 }}</div>
+                <div class="label">Hoàn thành</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.cancelled_trips or 0 }}</div>
+                <div class="label">Đã hủy</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.active_trips or 0 }}</div>
+                <div class="label">Đang hoạt động</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Tạo nhiều chuyến nhanh -->
+        <div class="bulk-create-section">
+            <h3>⚡ Tạo nhiều chuyến nhanh</h3>
+            <form method="POST" action="/admin/trips/bulk-create">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>Chọn xe <span style="color: red;">*</span></label>
+                        <select name="bulk_bus_id" required>
+                            <option value="">-- Chọn xe --</option>
+                            {% for bus in buses %}
+                            <option value="{{ bus.id }}">
+                                {{ bus.bus_company }} - {{ bus.license_plate }} ({{ bus.bus_type }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Từ ngày <span style="color: red;">*</span></label>
+                        <input type="date" name="bulk_start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Đến ngày <span style="color: red;">*</span></label>
+                        <input type="date" name="bulk_end_date" required>
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            ✨ Tạo chuyến
+                        </button>
+                    </div>
+                </div>
+                <small style="color: #666;">Tạo chuyến cho xe này trong khoảng thời gian trên (giá và giờ lấy từ xe)</small>
+            </form>
+        </div>
+
+        <!-- Bộ lọc -->
+        <div class="filter-section">
+            <h3 style="margin-bottom: 15px;">🔍 Tìm kiếm & Lọc</h3>
+            <form method="GET" action="/admin/trips">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>Tuyến</label>
+                        <select name="route_id">
+                            <option value="">-- Tất cả tuyến --</option>
+                            {% for route in routes %}
+                            <option value="{{ route.id }}" {% if filters.get('route_id') == route.id %}selected{% endif %}>
+                                {{ route.departure_point }} → {{ route.arrival_point }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Xe</label>
+                        <select name="bus_id">
+                            <option value="">-- Tất cả xe --</option>
+                            {% for bus in buses %}
+                            <option value="{{ bus.id }}" {% if filters.get('bus_id') == bus.id %}selected{% endif %}>
+                                {{ bus.bus_company }} - {{ bus.license_plate }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày chạy</label>
+                        <input type="date" name="trip_date" value="{{ filters.get('trip_date', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <select name="status">
+                            <option value="">-- Tất cả --</option>
+                            <option value="scheduled" {% if filters.get('status') == 'scheduled' %}selected{% endif %}>Đã lên lịch</option>
+                            <option value="running" {% if filters.get('status') == 'running' %}selected{% endif %}>Đang chạy</option>
+                            <option value="completed" {% if filters.get('status') == 'completed' %}selected{% endif %}>Hoàn thành</option>
+                            <option value="cancelled" {% if filters.get('status') == 'cancelled' %}selected{% endif %}>Đã hủy</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+                    <a href="/admin/trips" class="btn btn-secondary">↻ Đặt lại</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Bảng danh sách -->
+        <div class="table-container">
+            <h3 style="margin-bottom: 20px;">📋 Danh sách chuyến xe</h3>
+            {% if trips %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ngày chạy</th>
+                        <th>Nhà xe</th>
+                        <th>Tuyến</th>
+                        <th>Loại xe</th>
+                        <th>Giờ đi</th>
+                        <th>Giá vé</th>
+                        <th>Ghế</th>
+                        <th>Trạng thái</th>
+                        <th>Active</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in trips %}
+                    <tr>
+                        <td><strong>{{ t.id }}</strong></td>
+                        <td>{{ t.trip_date }}</td>
+                        <td>
+                            <strong>{{ t.bus_company }}</strong><br>
+                            <small style="color: #999;">{{ t.license_plate }}</small>
+                        </td>
+                        <td>
+                            {{ t.departure_point }} → {{ t.arrival_point }}<br>
+                            <small style="color: #999;">{{ t.distance }}km</small>
+                        </td>
+                        <td>{{ t.bus_type }}</td>
+                        <td>
+                            {{ t.departure_time }}
+                            {% if t.custom_departure_time %}
+                            <br><small style="color: #dc3545;">⚡ Custom</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="price">{{ "{:,.0f}".format(t.final_price) }}đ</span>
+                            {% if t.discount_percent > 0 %}
+                            <br><small style="color: #999; text-decoration: line-through;">{{ "{:,.0f}".format(t.price) }}đ</small>
+                            <small style="color: #dc3545;"> -{{ t.discount_percent }}%</small>
+                            {% endif %}
+                            {% if t.custom_price %}
+                            <br><small style="color: #dc3545;">⚡ Custom</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ t.available_seats }}</strong>/{{ t.total_seats }}<br>
+                            <small style="color: #999;">Đã đặt: {{ t.booked_seats }}</small>
+                        </td>
+                        <td>
+                            {% if t.status == 'scheduled' %}
+                            <span class="badge badge-scheduled">Đã lên lịch</span>
+                            {% elif t.status == 'running' %}
+                            <span class="badge badge-running">Đang chạy</span>
+                            {% elif t.status == 'completed' %}
+                            <span class="badge badge-completed">Hoàn thành</span>
+                            {% elif t.status == 'cancelled' %}
+                            <span class="badge badge-cancelled">Đã hủy</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if t.is_active %}
+                            <span class="badge badge-active">Bật</span>
+                            {% else %}
+                            <span class="badge badge-inactive">Tắt</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/admin/trips/edit/{{ t.id }}" class="btn-action btn-edit">✏️ Sửa</a>
+                            <a href="/admin/trips/toggle/{{ t.id }}" class="btn-action btn-toggle">
+                                {{ '🔴 Tắt' if t.is_active else '🟢 Bật' }}
+                            </a>
+                            <form method="POST" action="/admin/trips/delete/{{ t.id }}" style="display: inline;" onsubmit="return confirm('Xóa chuyến này?')">
+                                <button type="submit" class="btn-action btn-delete">🗑️ Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-data">
+                <p>📭 Chưa có chuyến xe nào</p>
+                <a href="/admin/trips/create" class="btn btn-primary" style="margin-top: 20px;">➕ Tạo chuyến đầu tiên</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

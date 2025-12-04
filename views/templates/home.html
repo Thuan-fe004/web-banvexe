@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - Hệ thống đặt vé xe khách</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            color: #333;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn-logout {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background: #5568d3;
+        }
+
+        /* Hero Section với ảnh nền */
+        .hero {
+            background: linear-gradient(rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1600') center/cover;
+            padding: 80px 20px 100px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h2 {
+            color: white;
+            font-size: 42px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            color: rgba(255,255,255,0.95);
+            font-size: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* Search Box giống ảnh */
+        .search-container {
+            max-width: 1200px;
+            margin: -60px auto 60px;
+            background: white;
+            border-radius: 8px;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .search-header {
+            background: white;
+            border-bottom: 3px solid #1e88e5;
+            padding: 0;
+        }
+
+        .search-tabs {
+            display: flex;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px 30px;
+            border: none;
+            background: white;
+            color: #666;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+        }
+
+        .tab-btn.active {
+            color: #1e88e5;
+            border-bottom-color: #1e88e5;
+            background: white;
+        }
+
+        .tab-btn:not(.active) {
+            opacity: 0.6;
+        }
+
+        .search-form {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 2fr auto 2fr 1.5fr auto;
+            gap: 0;
+            align-items: center;
+            background: white;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            padding: 0 15px;
+            position: relative;
+        }
+
+        .form-group::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 40px;
+            width: 1px;
+            background: #e0e0e0;
+        }
+
+        .form-group:last-of-type::after {
+            display: none;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .form-group input {
+            padding: 8px 0;
+            border: none;
+            font-size: 16px;
+            outline: none;
+            color: #333;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .form-group input::placeholder {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .swap-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+            margin: 20px 10px 0;
+        }
+
+        .swap-btn:hover {
+            border-color: #1e88e5;
+            color: #1e88e5;
+            transform: rotate(180deg);
+        }
+
+        .btn-search {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 20px;
+            height: 56px;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Popular Routes Grid */
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .route-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+        }
+
+        .route-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border-color: #1e88e5;
+        }
+
+        .route-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .route-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .route-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .route-info {
+            padding: 20px;
+        }
+
+        .route-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .route-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .route-price {
+            font-size: 20px;
+            color: #dc3545;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .discount-badge {
+            background: #dc3545;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Features Section */
+        .features {
+            background: white;
+            border-radius: 12px;
+            padding: 50px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .feature-item {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .feature-item h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .feature-item p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .form-group::after {
+                display: none;
+            }
+
+            .swap-btn {
+                margin: 0 auto;
+            }
+
+            .btn-search {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .hero h2 {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>
+            <span>🚌</span>
+            Đặt vé xe khách
+        </h1>
+        <div class="user-info">
+            <span class="user-name">👤 Xin chào, {{ user.full_name if user.full_name else user.username }}</span>
+            <a href="/logout" class="btn-logout">Đăng xuất</a>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h2>Đặt vé xe khách trực tuyến</h2>
+        <p>Nhanh chóng • Tiện lợi • An toàn</p>
+    </div>
+
+    <div class="search-container">
+        <div class="search-header">
+            <div class="search-tabs">
+                <button class="tab-btn active">
+                    <span>🚌</span> Xe khách
+                </button>
+            </div>
+        </div>
+
+        <form class="search-form" method="GET" action="/search">
+            <div class="form-group">
+                <label>
+                    <span style="color: #1e88e5;">📍</span> Nơi xuất phát
+                </label>
+                <input type="text" name="departure" placeholder="Hà Nội" required list="cities-departure">
+            </div>
+
+            <button type="button" class="swap-btn" onclick="swapLocations()" title="Đổi chiều">⇄</button>
+
+            <div class="form-group">
+                <label>
+                    <span style="color: #dc3545;">📍</span> Nơi đến
+                </label>
+                <input type="text" name="arrival" placeholder="Hải Phòng" required list="cities-arrival">
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <span style="color: #1e88e5;">📅</span> Ngày đi
+                </label>
+                <input type="date" name="date" required>
+            </div>
+
+            <button type="submit" class="btn-search">Tìm kiếm</button>
+        </form>
+
+        <datalist id="cities-departure">
+            <option value="Hà Nội">
+            <option value="TP. Hồ Chí Minh">
+            <option value="Đà Nẵng">
+            <option value="Hải Phòng">
+            <option value="Nha Trang">
+            <option value="Đà Lạt">
+            <option value="Huế">
+            <option value="Cần Thơ">
+            <option value="Vũng Tàu">
+            <option value="Quy Nhơn">
+        </datalist>
+
+        <datalist id="cities-arrival">
+            <option value="Hà Nội">
+            <option value="TP. Hồ Chí Minh">
+            <option value="Đà Nẵng">
+            <option value="Hải Phòng">
+            <option value="Nha Trang">
+            <option value="Đà Lạt">
+            <option value="Huế">
+            <option value="Cần Thơ">
+            <option value="Vũng Tàu">
+            <option value="Quy Nhơn">
+        </datalist>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">🔥 Tuyến đường phổ biến</h2>
+        
+        <div class="routes-grid">
+        {% if routes and routes|length > 0 %}
+            {% for route in routes %}
+            <a href="/search?departure={{ route.departure_city }}&arrival={{ route.arrival_city }}&date={{ today }}" class="route-card">
+                <div class="route-image">
+                    {% if route.route_image %}
+                        <img src="{{ route.route_image }}" alt="{{ route.route_name }}">
+                    {% else %}
+                        🚌
+                    {% endif %}
+                    {% if route.badge %}
+                    <div class="route-badge">{{ route.badge }}</div>
+                    {% endif %}
+                </div>
+                <div class="route-info">
+                    <div class="route-name">
+                        {{ route.route_name }}
+                    </div>
+                    <div class="route-details">
+                        <span>⏱️ {{ route.duration if route.duration else '~2h' }}</span>
+                        <span>🎫 {{ route.trip_count }}+ chuyến/ngày</span>
+                    </div>
+                    <div class="route-price">
+                        {% if route.min_price %}
+                            Từ {{ "{:,.0f}".format(route.min_price) }}đ
+                            {% if route.discount %}
+                            <span class="old-price">{{ "{:,.0f}".format(route.original_price) }}đ</span>
+                            <span class="discount-badge">{{ route.discount }}</span>
+                            {% endif %}
+                        {% else %}
+                            Liên hệ
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <!-- Hiển thị routes tĩnh nếu chưa có data -->
+            <a href="/search?departure=Hà Nội&arrival=Hải Phòng&date={{ today }}" class="route-card">
+                <div class="route-image">
+                    🚌
+                    <div class="route-badge">⚡ Nhanh nhất</div>
+                </div>
+                <div class="route-info">
+                    <div class="route-name">Hà Nội → Hải Phòng</div>
+                    <div class="route-details">
+                        <span>⏱️ ~2h30m</span>
+                        <span>🎫 20+ chuyến/ngày</span>
+                    </div>
+                    <div class="route-price">Từ 108.000đ</div>
+                </div>
+            </a>
+
+            <a href="/search?departure=TP. Hồ Chí Minh&arrival=Đà Lạt&date={{ today }}" class="route-card">
+                <div class="route-image">
+                    🚌
+                    <div class="route-badge">🔥 Giảm 20%</div>
+                </div>
+                <div class="route-info">
+                    <div class="route-name">TP.HCM → Đà Lạt</div>
+                    <div class="route-details">
+                        <span>⏱️ ~6h</span>
+                        <span>🎫 15+ chuyến/ngày</span>
+                    </div>
+                    <div class="route-price">
+                        Từ 144.000đ
+                        <span class="old-price">180.000đ</span>
+                        <span class="discount-badge">-20%</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/search?departure=TP. Hồ Chí Minh&arrival=Nha Trang&date={{ today }}" class="route-card">
+                <div class="route-image">
+                    🚌
+                    <div class="route-badge">💎 Siêu sale</div>
+                </div>
+                <div class="route-info">
+                    <div class="route-name">TP.HCM → Nha Trang</div>
+                    <div class="route-details">
+                        <span>⏱️ ~8h</span>
+                        <span>🎫 12+ chuyến/ngày</span>
+                    </div>
+                    <div class="route-price">
+                        Từ 279.000đ
+                        <span class="old-price">450.000đ</span>
+                        <span class="discount-badge">-38%</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="/search?departure=Hà Nội&arrival=Đà Nẵng&date={{ today }}" class="route-card">
+                <div class="route-image">🚌</div>
+                <div class="route-info">
+                    <div class="route-name">Hà Nội → Đà Nẵng</div>
+                    <div class="route-details">
+                        <span>⏱️ ~14h</span>
+                        <span>🎫 10+ chuyến/ngày</span>
+                    </div>
+                    <div class="route-price">Từ 350.000đ</div>
+                </div>
+            </a>
+
+            <a href="/search?departure=Hà Nội&arrival=Vinh&date={{ today }}" class="route-card">
+                <div class="route-image">🚌</div>
+                <div class="route-info">
+                    <div class="route-name">Hà Nội → Vinh</div>
+                    <div class="route-details">
+                        <span>⏱️ ~5h</span>
+                        <span>🎫 18+ chuyến/ngày</span>
+                    </div>
+                    <div class="route-price">Từ 180.000đ</div>
+                </div>
+            </a>
+
+            <a href="/search?departure=Đà Nẵng&arrival=Hội An&date={{ today }}" class="route-card">
+                <div class="route-image">
+                    🚌
+                    <div class="route-badge">⭐ Phổ biến</div>
+                </div>
+                <div class="route-info">
+                    <div class="route-name">Đà Nẵng → Hội An</div>
+                    <div class="route-details">
+                        <span>⏱️ ~1h</span>
+                        <span>🎫 30+ chuyến/ngày</span>
+                    </div>
+                    <div class="route-price">Từ 50.000đ</div>
+                </div>
+            </a>
+        {% endif %}
+    </div>
+
+        <div class="features">
+            <h2 class="section-title">✨ Tại sao chọn chúng tôi?</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🎫</div>
+                    <h3>Đặt vé dễ dàng</h3>
+                    <p>Đặt vé trực tuyến nhanh chóng chỉ với vài thao tác đơn giản</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <h3>Giá tốt nhất</h3>
+                    <p>So sánh giá từ nhiều nhà xe, đảm bảo giá tốt nhất thị trường</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Thanh toán an toàn</h3>
+                    <p>Hệ thống thanh toán bảo mật, đảm bảo thông tin cá nhân</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎧</div>
+                    <h3>Hỗ trợ 24/7</h3>
+                    <p>Đội ngũ chăm sóc khách hàng luôn sẵn sàng hỗ trợ bạn</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today as min date and default value
+        const dateInput = document.querySelector('input[name="date"]');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+
+        // Format date display
+        dateInput.addEventListener('change', function() {
+            const date = new Date(this.value);
+            const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            const dayName = dayNames[date.getDay()];
+            console.log(`${dayName}, ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`);
+        });
+
+        // Swap locations function
+        function swapLocations() {
+            const departure = document.querySelector('input[name="departure"]');
+            const arrival = document.querySelector('input[name="arrival"]');
+            const temp = departure.value;
+            departure.value = arrival.value;
+            arrival.value = temp;
+        }
+    </script>
+</body>
+</html>

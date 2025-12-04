@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết đơn đặt vé - {{ booking.booking_code }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 { font-size: 24px; }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #333;
+        }
+
+        .booking-code {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-confirmed { background: #d4edda; color: #155724; }
+        .badge-cancelled { background: #f8d7da; color: #721c24; }
+        .badge-completed { background: #d1ecf1; color: #0c5460; }
+        .badge-paid { background: #d4edda; color: #155724; }
+        .badge-unpaid { background: #fff3cd; color: #856404; }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0069d9;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .seat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .seat-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .seat-price {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -23px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: 12px;
+            width: 2px;
+            height: 100%;
+            background: #e0e0e0;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        /* ===== STATUS UPDATE SECTION ===== */
+        .status-update-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .status-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .status-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .status-select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-update {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-update-status {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-update-status:hover {
+            background: #5568d3;
+        }
+
+        .btn-update-payment {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-update-payment:hover {
+            background: #218838;
+        }
+
+        .current-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .current-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .current-status.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .current-status.completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .current-status.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .current-status.paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .current-status.unpaid {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        @media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .status-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>📋 Chi tiết đơn đặt vé</h1>
+        <div class="nav-links">
+            <a href="/admin/bookings">← Quay lại</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Đơn đặt vé <span class="booking-code">{{ booking.booking_code }}</span></h1>
+                <p style="color: #666; margin-top: 5px;">Ngày đặt: {{ booking.created_at.strftime('%d/%m/%Y %H:%M') if booking.created_at else '' }}</p>
+            </div>
+            <div>
+                {% if booking.booking_status == 'pending' %}
+                    <span class="badge badge-pending">⏳ Chờ xử lý</span>
+                {% elif booking.booking_status == 'confirmed' %}
+                    <span class="badge badge-confirmed">✓ Đã xác nhận</span>
+                {% elif booking.booking_status == 'completed' %}
+                    <span class="badge badge-completed">✓ Hoàn thành</span>
+                {% elif booking.booking_status == 'cancelled' %}
+                    <span class="badge badge-cancelled">✗ Đã hủy</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===== QUẢN LÝ TRẠNG THÁI ===== -->
+        <div class="status-update-section">
+            <h3 class="card-title">⚙️ Quản lý trạng thái</h3>
+            
+            <div class="status-form">
+                <!-- Trạng thái đơn -->
+                <div class="status-group">
+                    <label>Trạng thái đơn hàng</label>
+                    <div>
+                        <span class="current-status {{ booking.booking_status }}">
+                            Hiện tại: 
+                            {% if booking.booking_status == 'pending' %}Chờ xử lý
+                            {% elif booking.booking_status == 'confirmed' %}Đã xác nhận
+                            {% elif booking.booking_status == 'completed' %}Hoàn thành
+                            {% elif booking.booking_status == 'cancelled' %}Đã hủy
+                            {% endif %}
+                        </span>
+                    </div>
+                    <form method="POST" action="/admin/bookings/{{ booking.id }}/update-status" style="display: flex; gap: 10px; margin-top: 10px;">
+                        <select name="status" class="status-select" style="flex: 1;">
+                            <option value="pending" {% if booking.booking_status == 'pending' %}selected{% endif %}>Chờ xử lý</option>
+                            <option value="confirmed" {% if booking.booking_status == 'confirmed' %}selected{% endif %}>Đã xác nhận</option>
+                            <option value="completed" {% if booking.booking_status == 'completed' %}selected{% endif %}>Hoàn thành</option>
+                            <option value="cancelled" {% if booking.booking_status == 'cancelled' %}selected{% endif %}>Đã hủy</option>
+                        </select>
+                        <button type="submit" class="btn-update btn-update-status">Cập nhật</button>
+                    </form>
+                </div>
+
+                <!-- Trạng thái thanh toán -->
+                <div class="status-group">
+                    <label>Trạng thái thanh toán</label>
+                    <div>
+                        <span class="current-status {% if booking.payment_status == 'paid' %}paid{% else %}unpaid{% endif %}">
+                            Hiện tại: 
+                            {% if booking.payment_status == 'paid' %}Đã thanh toán
+                            {% elif booking.payment_status == 'pending' %}Chưa thanh toán
+                            {% elif booking.payment_status == 'refunded' %}Đã hoàn tiền
+                            {% endif %}
+                        </span>
+                    </div>
+                    <form method="POST" action="/admin/bookings/{{ booking.id }}/update-payment" style="display: flex; gap: 10px; margin-top: 10px;">
+                        <select name="payment_status" class="status-select" style="flex: 1;">
+                            <option value="pending" {% if booking.payment_status == 'pending' %}selected{% endif %}>Chưa thanh toán</option>
+                            <option value="paid" {% if booking.payment_status == 'paid' %}selected{% endif %}>Đã thanh toán</option>
+                            <option value="refunded" {% if booking.payment_status == 'refunded' %}selected{% endif %}>Đã hoàn tiền</option>
+                        </select>
+                        <button type="submit" class="btn-update btn-update-payment">Cập nhật</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- Booking Info -->
+                <div class="card">
+                    <h3 class="card-title">🎫 Thông tin đặt vé</h3>
+                    <div class="info-row">
+                        <span class="info-label">Mã đơn</span>
+                        <span class="info-value">{{ booking.booking_code }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Trạng thái đơn</span>
+                        <span class="info-value">
+                            {% if booking.booking_status == 'pending' %}
+                                <span class="badge badge-pending">Chờ xử lý</span>
+                            {% elif booking.booking_status == 'confirmed' %}
+                                <span class="badge badge-confirmed">Đã xác nhận</span>
+                            {% elif booking.booking_status == 'completed' %}
+                                <span class="badge badge-completed">Hoàn thành</span>
+                            {% elif booking.booking_status == 'cancelled' %}
+                                <span class="badge badge-cancelled">Đã hủy</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Thanh toán</span>
+                        <span class="info-value">
+                            {% if booking.payment_status == 'paid' %}
+                                <span class="badge badge-paid">Đã thanh toán</span>
+                            {% else %}
+                                <span class="badge badge-unpaid">Chưa thanh toán</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Phương thức TT</span>
+                        <span class="info-value">
+                            {% if booking.payment_method == 'cash' %}Tiền mặt
+                            {% elif booking.payment_method == 'bank_transfer' %}Chuyển khoản
+                            {% elif booking.payment_method == 'momo' %}MoMo
+                            {% elif booking.payment_method == 'vnpay' %}VNPay
+                            {% else %}{{ booking.payment_method }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Trip Info -->
+                <div class="card">
+                    <h3 class="card-title">🚌 Thông tin chuyến xe</h3>
+                    <div class="info-row">
+                        <span class="info-label">Tuyến đường</span>
+                        <span class="info-value">{{ booking.departure_point or trip.departure_point }} → {{ booking.arrival_point or trip.arrival_point }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Nhà xe</span>
+                        <span class="info-value">{{ booking.bus_company or trip.bus_company }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Loại xe</span>
+                        <span class="info-value">{{ booking.bus_type or trip.bus_type }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Ngày đi</span>
+                        <span class="info-value">{{ booking.travel_date }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Giờ khởi hành</span>
+                        <span class="info-value">{{ booking.departure_time or trip.departure_time }}</span>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="card">
+                    <h3 class="card-title">👤 Thông tin khách hàng</h3>
+                    <div class="info-row">
+                        <span class="info-label">Họ tên</span>
+                        <span class="info-value">{{ booking.passenger_name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Số điện thoại</span>
+                        <span class="info-value">{{ booking.passenger_phone }}</span>
+                    </div>
+                    {% if booking.passenger_email %}
+                    <div class="info-row">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ booking.passenger_email }}</span>
+                    </div>
+                    {% endif %}
+                    {% if customer %}
+                    <div class="info-row">
+                        <span class="info-label">Tài khoản</span>
+                        <span class="info-value">{{ customer.username }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Seats & Price -->
+                <div class="card">
+                    <h3 class="card-title">💺 Chi tiết ghế & giá</h3>
+                    <div class="seat-grid">
+                        {% for seat in booking.seat_numbers.split(',') %}
+                        <div class="seat-item">
+                            <div class="seat-number">{{ seat }}</div>
+                            <div class="seat-price">{{ "{:,.0f}".format(booking.price_per_seat) }}đ</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #f0f0f0;">
+                        <div class="info-row">
+                            <span class="info-label">Số ghế</span>
+                            <span class="info-value">{{ booking.total_seats }} ghế</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Giá/ghế</span>
+                            <span class="info-value">{{ "{:,.0f}".format(booking.price_per_seat) }}đ</span>
+                        </div>
+                        <div class="info-row" style="font-size: 18px; font-weight: bold;">
+                            <span class="info-label">Tổng cộng</span>
+                            <span class="info-value" style="color: #28a745;">{{ "{:,.0f}".format(booking.total_price) }}đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Actions -->
+                <div class="card">
+                    <h3 class="card-title">⚙️ Thao tác nhanh</h3>
+                    <div class="action-buttons">
+                        {% if booking.booking_status == 'pending' %}
+                            <form method="POST" action="/admin/bookings/{{ booking.id }}/confirm" style="flex: 1;">
+                                <button type="submit" class="btn btn-success" style="width: 100%;">✓ Xác nhận đơn</button>
+                            </form>
+                        {% endif %}
+                        
+                        {% if booking.payment_status == 'pending' and booking.booking_status != 'cancelled' %}
+                            <form method="POST" action="/admin/bookings/{{ booking.id }}/payment/confirm" style="flex: 1;">
+                                <button type="submit" class="btn btn-primary" style="width: 100%;">💳 Xác nhận đã TT</button>
+                            </form>
+                        {% endif %}
+                        
+                        {% if booking.booking_status == 'confirmed' %}
+                            <form method="POST" action="/admin/bookings/{{ booking.id }}/complete" style="flex: 1;">
+                                <button type="submit" class="btn btn-success" style="width: 100%;">✓ Hoàn thành</button>
+                            </form>
+                        {% endif %}
+                        
+                        {% if booking.booking_status not in ['cancelled', 'completed'] %}
+                            <button onclick="showCancelModal()" class="btn btn-danger" style="width: 100%;">✗ Hủy đơn</button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="card">
+                    <h3 class="card-title">📅 Lịch sử</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-time">{{ booking.created_at.strftime('%d/%m/%Y %H:%M') if booking.created_at else '' }}</div>
+                            <div class="timeline-content">Khách đặt vé</div>
+                        </div>
+                        {% if booking.booking_status in ['confirmed', 'completed'] %}
+                        <div class="timeline-item">
+                            <div class="timeline-time">{{ booking.updated_at.strftime('%d/%m/%Y %H:%M') if booking.updated_at else '' }}</div>
+                            <div class="timeline-content">Đơn được xác nhận</div>
+                        </div>
+                        {% endif %}
+                        {% if booking.payment_status == 'paid' %}
+                        <div class="timeline-item">
+                            <div class="timeline-time">{{ booking.updated_at.strftime('%d/%m/%Y %H:%M') if booking.updated_at else '' }}</div>
+                            <div class="timeline-content">Đã thanh toán</div>
+                        </div>
+                        {% endif %}
+                        {% if booking.booking_status == 'cancelled' %}
+                        <div class="timeline-item">
+                            <div class="timeline-time">{{ booking.updated_at.strftime('%d/%m/%Y %H:%M') if booking.updated_at else '' }}</div>
+                            <div class="timeline-content">Đơn bị hủy</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if booking.notes %}
+                <div class="card">
+                    <h3 class="card-title">📝 Ghi chú</h3>
+                    <p style="color: #666;">{{ booking.notes }}</p>
+                </div>
+                {% endif %}
+
+                {% if booking.cancel_reason %}
+                <div class="card">
+                    <h3 class="card-title">❌ Lý do hủy</h3>
+                    <p style="color: #dc3545;">{{ booking.cancel_reason }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Modal -->
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Hủy đơn đặt vé</h3>
+            <form method="POST" action="/admin/bookings/{{ booking.id }}/cancel">
+                <div class="form-group">
+                    <label>Lý do hủy</label>
+                    <textarea name="cancel_reason" rows="4" required placeholder="Nhập lý do hủy đơn..."></textarea>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                    <button type="button" onclick="hideCancelModal()" class="btn btn-secondary">Đóng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showCancelModal() {
+            document.getElementById('cancelModal').classList.add('active');
+        }
+
+        function hideCancelModal() {
+            document.getElementById('cancelModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('cancelModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideCancelModal();
+            }
+        });
+    </script>
+</body>
+</html>

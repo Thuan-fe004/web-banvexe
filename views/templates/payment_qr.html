@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quét mã thanh toán</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .qr-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .qr-image {
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0e9d2;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #856404;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: #dc3545;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .instructions {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .instructions-title {
+            font-weight: 600;
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .instructions-content {
+            color: #0c5460;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .instructions-content li {
+            margin-bottom: 8px;
+        }
+
+        .countdown {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 10px;
+        }
+
+        .countdown-label {
+            font-size: 13px;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        .countdown-time {
+            font-size: 32px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .copy-btn {
+            background: #17a2b8;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #138496;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">
+                {% if payment_method == 'bank_transfer' %}🏦
+                {% elif payment_method == 'momo' %}💳
+                {% elif payment_method == 'vnpay' %}💳
+                {% endif %}
+            </div>
+            <h1>
+                {% if payment_method == 'bank_transfer' %}Chuyển khoản ngân hàng
+                {% elif payment_method == 'momo' %}Thanh toán qua MoMo
+                {% elif payment_method == 'vnpay' %}Thanh toán qua VNPay
+                {% endif %}
+            </h1>
+            <p class="subtitle">Quét mã QR để thanh toán</p>
+        </div>
+
+        <div class="alert alert-success" id="copyAlert">
+            ✓ Đã sao chép!
+        </div>
+
+        <!-- Countdown -->
+        <div class="countdown">
+            <div class="countdown-label">⏰ Thời gian giữ vé</div>
+            <div class="countdown-time" id="countdown">10:00</div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-container">
+            {% if payment_method == 'bank_transfer' %}
+                <img src="{{ payment_info.qr_url }}" alt="QR Code" class="qr-image">
+            {% else %}
+                <img src="data:image/png;base64,{{ payment_info.qr_base64 }}" alt="QR Code" class="qr-image">
+            {% endif %}
+        </div>
+
+        <!-- Amount -->
+        <div class="amount">{{ "{:,.0f}".format(booking_temp.total_price) }}đ</div>
+
+        <!-- Payment Info -->
+        <div class="info-box">
+            <div class="info-title">📋 Thông tin thanh toán</div>
+            
+            {% if payment_method == 'bank_transfer' %}
+                <div class="info-row">
+                    <span class="info-label">Ngân hàng:</span>
+                    <span class="info-value">
+                        {{ payment_info.bank_id }}
+                        <button class="copy-btn" onclick="copyText('{{ payment_info.bank_id }}')">Copy</button>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Số tài khoản:</span>
+                    <span class="info-value">
+                        {{ payment_info.account_number }}
+                        <button class="copy-btn" onclick="copyText('{{ payment_info.account_number }}')">Copy</button>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Chủ tài khoản:</span>
+                    <span class="info-value">{{ payment_info.account_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nội dung CK:</span>
+                    <span class="info-value">
+                        {{ payment_info.content }}
+                        <button class="copy-btn" onclick="copyText('{{ payment_info.content }}')">Copy</button>
+                    </span>
+                </div>
+            
+            {% elif payment_method == 'momo' %}
+                <div class="info-row">
+                    <span class="info-label">Số điện thoại:</span>
+                    <span class="info-value">
+                        {{ payment_info.phone }}
+                        <button class="copy-btn" onclick="copyText('{{ payment_info.phone }}')">Copy</button>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Tên:</span>
+                    <span class="info-value">{{ payment_info.name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Nội dung:</span>
+                    <span class="info-value">{{ payment_info.content }}</span>
+                </div>
+            
+            {% elif payment_method == 'vnpay' %}
+                <div class="info-row">
+                    <span class="info-label">Mã đơn:</span>
+                    <span class="info-value">{{ payment_info.content }}</span>
+                </div>
+            {% endif %}
+            
+            <div class="info-row">
+                <span class="info-label">Số tiền:</span>
+                <span class="info-value">{{ "{:,.0f}".format(booking_temp.total_price) }}đ</span>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <div class="instructions-title">📌 Hướng dẫn thanh toán</div>
+            <ol class="instructions-content">
+                {% if payment_method == 'bank_transfer' %}
+                    <li>Mở ứng dụng ngân hàng của bạn</li>
+                    <li>Quét mã QR hoặc nhập thông tin tài khoản</li>
+                    <li>Nhập <strong>ĐÚNG NỘI DUNG</strong> chuyển khoản</li>
+                    <li>Xác nhận và hoàn tất giao dịch</li>
+                {% elif payment_method == 'momo' %}
+                    <li>Mở ứng dụng MoMo</li>
+                    <li>Chọn "Quét mã QR"</li>
+                    <li>Quét mã QR phía trên</li>
+                    <li>Xác nhận và thanh toán</li>
+                {% elif payment_method == 'vnpay' %}
+                    <li>Mở ứng dụng ngân hàng hỗ trợ VNPay</li>
+                    <li>Chọn "Quét mã QR"</li>
+                    <li>Quét mã QR phía trên</li>
+                    <li>Xác nhận và thanh toán</li>
+                {% endif %}
+                <li>Vé sẽ được xác nhận sau khi thanh toán thành công</li>
+            </ol>
+        </div>
+
+        <!-- Buttons -->
+        <form method="POST" action="/booking/check-payment">
+            <input type="hidden" name="booking_id" value="{{ booking_temp.booking_id }}">
+            <button type="submit" class="btn btn-primary">✓ Tôi đã thanh toán</button>
+        </form>
+        
+        <button onclick="history.back()" class="btn btn-secondary">← Quay lại</button>
+    </div>
+
+    <script>
+        // Countdown timer
+        let timeLeft = 10 * 60;
+        
+        function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            document.getElementById('countdown').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                alert('Hết thời gian giữ vé! Vui lòng đặt lại.');
+                window.location.href = '/';
+            } else if (timeLeft <= 60) {
+                document.getElementById('countdown').style.color = '#dc3545';
+            }
+            
+            timeLeft--;
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Copy text function
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const alert = document.getElementById('copyAlert');
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

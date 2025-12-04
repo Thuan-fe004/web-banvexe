@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý vé - Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 { font-size: 24px; }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card.success { border-left-color: #28a745; }
+        .stat-card.warning { border-left-color: #ffc107; }
+        .stat-card.danger { border-left-color: #dc3545; }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-subtext {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-unpaid {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #138496;
+        }
+
+        .booking-code {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🎫 Quản lý vé & đơn đặt</h1>
+        <div class="nav-links">
+            <a href="/admin">← Dashboard</a>
+            <a href="/admin/bookings/statistics">📊 Thống kê</a>
+            <a href="/logout">Đăng xuất</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Tổng đơn (30 ngày)</div>
+                <div class="stat-value">{{ stats.total_bookings or 0 }}</div>
+                <div class="stat-subtext">Tất cả đơn đặt vé</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-label">Đã xác nhận</div>
+                <div class="stat-value">{{ stats.confirmed or 0 }}</div>
+                <div class="stat-subtext">Đơn đã xác nhận</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-label">Chờ xử lý</div>
+                <div class="stat-value">{{ stats.pending or 0 }}</div>
+                <div class="stat-subtext">Cần xác nhận</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Doanh thu</div>
+                <div class="stat-value">{{ "{:,.0f}".format(stats.total_revenue or 0) }}đ</div>
+                <div class="stat-subtext">Đã thanh toán</div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3 class="filter-title">🔍 Lọc & Tìm kiếm</h3>
+            <form method="GET" action="/admin/bookings">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>Tìm kiếm</label>
+                        <input type="text" name="search" placeholder="Mã đơn, tên, SĐT..." value="{{ filters.search }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái đơn</label>
+                        <select name="status">
+                            <option value="">Tất cả</option>
+                            <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>Chờ xử lý</option>
+                            <option value="confirmed" {% if filters.status == 'confirmed' %}selected{% endif %}>Đã xác nhận</option>
+                            <option value="completed" {% if filters.status == 'completed' %}selected{% endif %}>Hoàn thành</option>
+                            <option value="cancelled" {% if filters.status == 'cancelled' %}selected{% endif %}>Đã hủy</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Thanh toán</label>
+                        <select name="payment_status">
+                            <option value="">Tất cả</option>
+                            <option value="pending" {% if filters.payment_status == 'pending' %}selected{% endif %}>Chưa thanh toán</option>
+                            <option value="paid" {% if filters.payment_status == 'paid' %}selected{% endif %}>Đã thanh toán</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Từ ngày</label>
+                        <input type="date" name="date_from" value="{{ filters.date_from }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Đến ngày</label>
+                        <input type="date" name="date_to" value="{{ filters.date_to }}">
+                    </div>
+                </div>
+                <div class="filter-buttons">
+                    <button type="submit" class="btn btn-primary">🔍 Lọc</button>
+                    <a href="/admin/bookings" class="btn btn-secondary">🔄 Xóa bộ lọc</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            {% if bookings %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Tuyến xe</th>
+                        <th>Ngày đi</th>
+                        <th>Số ghế</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Thanh toán</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td><span class="booking-code">{{ booking.booking_code }}</span></td>
+                        <td>
+                            <strong>{{ booking.passenger_name }}</strong><br>
+                            <small>{{ booking.passenger_phone }}</small>
+                        </td>
+                        <td>
+                            {{ booking.departure_city }} → {{ booking.arrival_city }}<br>
+                            <small>{{ booking.departure_time }}</small>
+                        </td>
+                        <td>{{ booking.travel_date }}</td>
+                        <td>{{ booking.total_seats }} ghế</td>
+                        <td><strong>{{ "{:,.0f}".format(booking.total_price) }}đ</strong></td>
+                        <td>
+                            {% if booking.booking_status == 'pending' %}
+                                <span class="badge badge-pending">Chờ xử lý</span>
+                            {% elif booking.booking_status == 'confirmed' %}
+                                <span class="badge badge-confirmed">Đã xác nhận</span>
+                            {% elif booking.booking_status == 'completed' %}
+                                <span class="badge badge-completed">Hoàn thành</span>
+                            {% elif booking.booking_status == 'cancelled' %}
+                                <span class="badge badge-cancelled">Đã hủy</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if booking.payment_status == 'paid' %}
+                                <span class="badge badge-paid">Đã TT</span>
+                            {% else %}
+                                <span class="badge badge-unpaid">Chưa TT</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/admin/bookings/{{ booking.id }}" class="btn-sm btn-view">Chi tiết</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>Không có đơn đặt vé nào</h3>
+                <p>Thử thay đổi bộ lọc để xem kết quả khác</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body> 
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt vé thành công</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 { font-size: 24px; }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 50px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .booking-code {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .booking-code-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .booking-code-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 2px;
+        }
+
+        .booking-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .seats-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .seat-badge {
+            background: #ffc107;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .ticket-list {
+            margin-top: 15px;
+        }
+
+        .ticket-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ticket-code {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .ticket-seat {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-download {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-download:hover {
+            background: #138496;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9ff;
+        }
+
+        .qr-code {
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+
+        .qr-code img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .qr-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .notice-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .notice-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notice-content {
+            font-size: 14px;
+            color: #856404;
+            line-height: 1.8;
+        }
+
+        .notice-content li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .success-card {
+                padding: 30px 20px;
+            }
+
+            .booking-code-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>✅ Đặt vé thành công</h1>
+    </div>
+
+    <div class="container">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            
+            <h1 class="success-title">Đặt vé thành công!</h1>
+            <p class="success-message">
+                Cảm ơn bạn đã tin tưởng sử dụng dịch vụ của chúng tôi.<br>
+                Thông tin vé đã được gửi đến email và số điện thoại của bạn.
+            </p>
+
+            <!-- Booking Code -->
+            <div class="booking-code">
+                <div class="booking-code-label">Mã đặt vé của bạn</div>
+                <div class="booking-code-value">{{ booking.booking_code }}</div>
+            </div>
+
+            <!-- Booking Details -->
+            <div class="booking-details">
+                <!-- Trip Info -->
+                <div class="detail-section">
+                    <div class="detail-title">📍 Thông tin chuyến đi</div>
+                    {% if booking.route_name %}
+                    <div class="detail-row">
+                        <span class="detail-label">Tuyến:</span>
+                        <span class="detail-value">{{ booking.route_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if booking.bus_company %}
+                    <div class="detail-row">
+                        <span class="detail-label">Nhà xe:</span>
+                        <span class="detail-value">{{ booking.bus_company }}</span>
+                    </div>
+                    {% endif %}
+                    {% if booking.bus_type %}
+                    <div class="detail-row">
+                        <span class="detail-label">Loại xe:</span>
+                        <span class="detail-value">{{ booking.bus_type }}</span>
+                    </div>
+                    {% endif %}
+                    {% if booking.travel_date %}
+                    <div class="detail-row">
+                        <span class="detail-label">Ngày đi:</span>
+                        <span class="detail-value">{{ booking.travel_date }}</span>
+                    </div>
+                    {% endif %}
+                    {% if booking.departure_time %}
+                    <div class="detail-row">
+                        <span class="detail-label">Giờ khởi hành:</span>
+                        <span class="detail-value">{{ booking.departure_time }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Passenger Info -->
+                <div class="detail-section">
+                    <div class="detail-title">👤 Thông tin hành khách</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Họ tên:</span>
+                        <span class="detail-value">{{ booking.passenger_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Số điện thoại:</span>
+                        <span class="detail-value">{{ booking.passenger_phone }}</span>
+                    </div>
+                    {% if booking.passenger_email %}
+                    <div class="detail-row">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">{{ booking.passenger_email }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Seats Info - ✅ FIX: Lấy từ tickets thay vì booking.seat_numbers -->
+                <div class="detail-section">
+                    <div class="detail-title">💺 Thông tin ghế</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Số lượng:</span>
+                        <span class="detail-value">{{ booking.total_seats }} ghế</span>
+                    </div>
+                    <div class="seats-display">
+                        {% for ticket in tickets %}
+                        <span class="seat-badge">Ghế {{ ticket.seat_number }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Tickets -->
+                <div class="detail-section">
+                    <div class="detail-title">🎫 Danh sách vé</div>
+                    <div class="ticket-list">
+                        {% for ticket in tickets %}
+                        <div class="ticket-item">
+                            <div class="ticket-info">
+                                <span class="ticket-code">{{ ticket.ticket_code }}</span>
+                                <span class="ticket-seat">Ghế {{ ticket.seat_number }}</span>
+                            </div>
+                            <button class="btn-download" onclick="downloadTicket('{{ ticket.ticket_code }}')">
+                                📥 Tải vé
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="detail-section">
+                    <div class="detail-title">💰 Thông tin thanh toán</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tổng tiền:</span>
+                        <span class="detail-value" style="color: #28a745; font-size: 18px;">
+                            {{ "{:,.0f}".format(booking.total_price) }}đ
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Phương thức:</span>
+                        <span class="detail-value">
+                            {% if booking.payment_method == 'cash' %}Tiền mặt
+                            {% elif booking.payment_method == 'bank_transfer' %}Chuyển khoản
+                            {% elif booking.payment_method == 'momo' %}Ví MoMo
+                            {% elif booking.payment_method == 'vnpay' %}VNPay
+                            {% else %}{{ booking.payment_method }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Trạng thái:</span>
+                        <span class="detail-value" style="color: #ffc107;">
+                            {% if booking.payment_status == 'pending' %}Chờ thanh toán
+                            {% elif booking.payment_status == 'paid' %}Đã thanh toán
+                            {% else %}{{ booking.payment_status }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Code (Optional) -->
+            <div class="qr-code">
+                <div class="qr-label">Mã QR check-in</div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ booking.booking_code }}" 
+                     alt="QR Code">
+                <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                    Quét mã này khi lên xe
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/booking/my-bookings" class="btn btn-primary">
+                    📋 Vé của tôi
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    🏠 Về trang chủ
+                </a>
+            </div>
+
+            <!-- Notice -->
+            <div class="notice-box">
+                <div class="notice-title">
+                    ℹ️ Lưu ý quan trọng
+                </div>
+                <ul class="notice-content">
+                    <li>Vui lòng có mặt tại điểm đón trước giờ khởi hành 15 phút</li>
+                    <li>Mang theo CMND/CCCD và mã đặt vé khi lên xe</li>
+                    <li>Liên hệ hotline nếu cần hỗ trợ: <strong>1900 xxxx</strong></li>
+                    <li>Vé có thể hủy trước 24h để được hoàn tiền</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadTicket(ticketCode) {
+            // TODO: Implement download ticket as PDF
+            alert('Tính năng tải vé đang được phát triển!\nMã vé: ' + ticketCode);
+        }
+
+        // Print page
+        function printBooking() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

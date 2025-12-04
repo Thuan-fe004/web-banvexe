@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn ghế - {{ trip.bus_company }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 { 
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 30px;
+        }
+
+        .seat-area {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .trip-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .trip-route {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .trip-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .trip-detail-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .legend {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 35px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border: 2px dashed #e0e0e0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .legend-seat {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .legend-seat.available {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #2196f3;
+            color: #1565c0;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+        }
+
+        .legend-seat.selected {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            border: 2px solid #f57c00;
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+        }
+
+        .legend-seat.booked {
+            background: #bdbdbd;
+            border: 2px solid #757575;
+            color: #424242;
+        }
+
+        .bus-container {
+            perspective: 1000px;
+        }
+
+        .bus-layout {
+            background: linear-gradient(to bottom, #f5f5f5 0%, #ffffff 50%, #f5f5f5 100%);
+            border: 4px solid #333;
+            border-radius: 40px 40px 20px 20px;
+            padding: 30px 25px;
+            position: relative;
+            max-width: 650px;
+            margin: 0 auto;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
+        .driver-area {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 3px dashed #ddd;
+        }
+
+        .driver-seat {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #333 0%, #555 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .floor-section {
+            margin-bottom: 35px;
+        }
+
+        .floor-label {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .seats-grid {
+            display: grid;
+            gap: 18px;
+            padding: 0 25px;
+        }
+
+        .seats-grid.single-floor {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .seats-grid.double-floor {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .seat {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .seat.available {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 3px solid #2196f3;
+            color: #1565c0;
+        }
+
+        .seat.available:hover {
+            background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .seat.selected {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            border: 3px solid #f57c00;
+            color: white;
+            animation: pulse 0.4s ease-in-out;
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.5);
+        }
+
+        .seat.booked {
+            background: #bdbdbd;
+            border: 3px solid #757575;
+            color: #424242;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .booking-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f0f0f0;
+            text-align: center;
+        }
+
+        .selected-seats {
+            margin-bottom: 25px;
+        }
+
+        .selected-seats-label {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .seat-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 50px;
+        }
+
+        .seat-tag {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .seat-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 5px;
+            transition: transform 0.2s;
+        }
+
+        .seat-tag .remove:hover {
+            transform: scale(1.3);
+        }
+
+        .price-breakdown {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #666;
+        }
+
+        .price-row.total {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            padding-top: 15px;
+            border-top: 3px solid #ddd;
+            margin-top: 12px;
+        }
+
+        .price-value {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .passenger-info {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-continue {
+            width: 100%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-continue:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(40, 167, 69, 0.5);
+        }
+
+        .btn-continue:disabled {
+            background: linear-gradient(135deg, #ccc 0%, #aaa 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 25px;
+            color: #999;
+            font-style: italic;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .booking-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🚌 Chọn ghế ngồi</h1>
+    </div>
+
+    <div class="container">
+        <div class="seat-area">
+            <div class="trip-info">
+                <div class="trip-route">
+                    {{ trip.departure_point }} → {{ trip.arrival_point }}
+                </div>
+                <div class="trip-details">
+                    <div class="trip-detail-item">🚌 {{ trip.bus_company }}</div>
+                    <div class="trip-detail-item">🕐 {{ trip.departure_time }}</div>
+                    <div class="trip-detail-item">📅 {{ trip.trip_date }}</div>
+                    <div class="trip-detail-item">💺 {{ trip.bus_type }}</div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-seat available">1</div>
+                    <span>Ghế trống</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-seat selected">2</div>
+                    <span>Đang chọn</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-seat booked">3</div>
+                    <span>Đã đặt</span>
+                </div>
+            </div>
+
+            <div class="bus-container">
+                <div class="bus-layout">
+                    <div class="driver-area">
+                        <div class="driver-seat">
+                            🚗 Tài xế
+                        </div>
+                    </div>
+
+                    <div id="busSeatsContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-summary">
+            <h3 class="summary-title">📋 Thông tin đặt vé</h3>
+
+            <div class="selected-seats">
+                <div class="selected-seats-label">Ghế đã chọn:</div>
+                <div class="seat-tags" id="selectedSeatsTags">
+                    <div class="empty-state">Chưa chọn ghế nào</div>
+                </div>
+            </div>
+
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Số ghế:</span>
+                    <span id="seatCount">0</span>
+                </div>
+                <div class="price-row">
+                    <span>Giá vé/ghế:</span>
+                    <span class="price-value">{{ "{:,.0f}".format(trip.final_price) }}đ</span>
+                </div>
+                <div class="price-row total">
+                    <span>Tổng cộng:</span>
+                    <span class="price-value" id="totalPrice">0đ</span>
+                </div>
+            </div>
+
+            <form id="bookingForm" method="POST" action="/booking/confirm">
+                <input type="hidden" name="trip_id" value="{{ trip.trip_id }}">
+                <input type="hidden" name="travel_date" value="{{ travel_date }}">
+                <input type="hidden" name="selected_seats" id="selectedSeatsInput">
+                
+                <div class="passenger-info">
+                    <div class="form-group">
+                        <label>Họ tên <span style="color: red;">*</span></label>
+                        <input type="text" name="passenger_name" required placeholder="Nguyễn Văn A">
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại <span style="color: red;">*</span></label>
+                        <input type="tel" name="passenger_phone" required placeholder="0123456789" pattern="[0-9]{10}">
+                    </div>
+                    <div class="form-group">
+                        <label>Email (không bắt buộc)</label>
+                        <input type="email" name="passenger_email" placeholder="example@email.com">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-continue" id="btnContinue" disabled>
+                    💳 Tiếp tục thanh toán
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ✅ FIX: Data từ server - seat_number là INT
+        const tripData = {
+            id: {{ trip.trip_id }},
+            price: {{ trip.final_price }},
+            totalSeats: {{ trip.total_seats }},
+            busType: "{{ trip.bus_type }}",
+            bookedSeats: {{ booked_seats|tojson }}  // Danh sách STRING: ["1", "2", "3"]
+        };
+
+        let selectedSeats = [];
+
+        function getBusLayout() {
+            const busType = tripData.busType.toLowerCase();
+            
+            if (busType.includes('giường nằm') || busType.includes('sleeper')) {
+                return {
+                    floors: 2,
+                    seatsPerRow: 3,
+                    gridClass: 'double-floor'
+                };
+            } else {
+                return {
+                    floors: 1,
+                    seatsPerRow: 4,
+                    gridClass: 'single-floor'
+                };
+            }
+        }
+
+        function generateSeats() {
+            const container = document.getElementById('busSeatsContainer');
+            const layout = getBusLayout();
+            
+            if (layout.floors === 2) {
+                const seatsPerFloor = Math.ceil(tripData.totalSeats / 2);
+                
+                const floor1Section = createFloorSection('Tầng 1', layout.gridClass);
+                generateFloorSeats(floor1Section.grid, 1, seatsPerFloor + 1, layout.seatsPerRow);
+                container.appendChild(floor1Section.section);
+                
+                if (tripData.totalSeats > seatsPerFloor) {
+                    const floor2Section = createFloorSection('Tầng 2', layout.gridClass);
+                    generateFloorSeats(floor2Section.grid, seatsPerFloor + 1, tripData.totalSeats + 1, layout.seatsPerRow);
+                    container.appendChild(floor2Section.section);
+                }
+            } else {
+                const floor1Section = createFloorSection('', layout.gridClass);
+                generateFloorSeats(floor1Section.grid, 1, tripData.totalSeats + 1, layout.seatsPerRow);
+                container.appendChild(floor1Section.section);
+            }
+        }
+
+        function createFloorSection(label, gridClass) {
+            const section = document.createElement('div');
+            section.className = 'floor-section';
+            
+            if (label) {
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'floor-label';
+                labelDiv.textContent = `🔸 ${label}`;
+                section.appendChild(labelDiv);
+            }
+            
+            const grid = document.createElement('div');
+            grid.className = `seats-grid ${gridClass}`;
+            section.appendChild(grid);
+            
+            return { section, grid };
+        }
+
+        // ✅ FIX: Generate ghế với số INT (1, 2, 3, 4...)
+        function generateFloorSeats(grid, startIdx, endIdx, seatsPerRow) {
+            for (let i = startIdx; i < endIdx; i++) {
+                createSeat(i, grid);  // Truyền số INT thay vì A1, B1...
+            }
+        }
+
+        // ✅ FIX: Tạo ghế với số INT
+        function createSeat(seatNumber, container) {
+            const isBooked = tripData.bookedSeats.includes(String(seatNumber));
+            
+            const seat = document.createElement('div');
+            seat.className = `seat ${isBooked ? 'booked' : 'available'}`;
+            seat.textContent = seatNumber;  // Hiển thị số: 1, 2, 3...
+            seat.dataset.seat = seatNumber;
+            
+            if (!isBooked) {
+                seat.onclick = () => toggleSeat(seatNumber);
+            }
+            
+            container.appendChild(seat);
+        }
+
+        // ✅ FIX: Toggle seat với số INT
+        function toggleSeat(seatNumber) {
+            const seat = document.querySelector(`[data-seat="${seatNumber}"]`);
+            const seatStr = String(seatNumber);
+            
+            if (selectedSeats.includes(seatStr)) {
+                // Deselect
+                selectedSeats = selectedSeats.filter(s => s !== seatStr);
+                seat.classList.remove('selected');
+                seat.classList.add('available');
+            } else {
+                // Select
+                selectedSeats.push(seatStr);
+                seat.classList.remove('available');
+                seat.classList.add('selected');
+            }
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const seatCount = selectedSeats.length;
+            const totalPrice = seatCount * tripData.price;
+            
+            document.getElementById('seatCount').textContent = seatCount;
+            document.getElementById('totalPrice').textContent = totalPrice.toLocaleString('vi-VN') + 'đ';
+            
+            const tagsContainer = document.getElementById('selectedSeatsTags');
+            
+            if (seatCount === 0) {
+                tagsContainer.innerHTML = '<div class="empty-state">Chưa chọn ghế nào</div>';
+            } else {
+                tagsContainer.innerHTML = selectedSeats.sort((a, b) => parseInt(a) - parseInt(b)).map(seat => `
+                    <div class="seat-tag">
+                        Ghế ${seat}
+                        <span class="remove" onclick="toggleSeat(${seat})">✕</span>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('selectedSeatsInput').value = selectedSeats.join(',');
+            document.getElementById('btnContinue').disabled = seatCount === 0;
+        }
+
+        // Initialize
+        generateSeats();
+    </script>
+</body>
+</html>

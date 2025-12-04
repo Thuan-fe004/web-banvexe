@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hệ thống bán vé xe khách</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-name {
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .welcome-card h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-card p {
+            color: #666;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+            display: block;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .menu-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .menu-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .menu-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .menu-card.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .menu-card.active h3,
+        .menu-card.active p {
+            color: white;
+        }
+
+        .menu-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge-available {
+            background: #28a745;
+            color: white;
+        }
+
+        .alert {
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>
+            <span>🚌</span>
+            Admin Dashboard
+        </h1>
+        <div class="user-info">
+            <span class="user-name">👤 Xin chào, {{ user.full_name if user.full_name else user.username }} (Admin)</span>
+            <a href="/logout" class="btn-logout">Đăng xuất</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="welcome-card">
+            <h2>Xin chào, {{ user.full_name if user.full_name else user.username }}! 👋</h2>
+            <p>Chào mừng bạn đến với trang quản trị hệ thống bán vé xe khách.</p>
+        </div>
+
+        <div class="menu-grid">
+            <a href="/admin/users" class="menu-card">
+                <span class="menu-icon">👥</span>
+                <h3>Quản lý tài khoản <span class="badge badge-available">✓</span></h3>
+                <p>Xem danh sách, thêm, sửa, xóa tài khoản người dùng trong hệ thống</p>
+            </a>
+
+            <a href="/admin/routes" class="menu-card">
+                <span class="menu-icon">🗺️</span>
+                <h3>Quản lý tuyến đường <span class="badge badge-available">✓</span></h3>
+                <p>Quản lý các tuyến xe, điểm đi, điểm đến và thông tin tuyến đường</p>
+            </a>
+
+            <a href="/admin/trips" class="menu-card">
+                <span class="menu-icon">🚍</span>
+                <h3>Quản lý chuyến xe <span class="badge badge-available">✓</span></h3>
+                <p>Quản lý lịch trình chuyến xe, giờ khởi hành, giá vé và số ghế</p>
+            </a>
+
+            <a href="/admin/bookings" class="menu-card">
+                <span class="menu-icon">🎫</span>
+                <h3>Quản lý vé <span class="badge badge-available">✓</span></h3>
+                <p>Xem danh sách đặt vé, xác nhận, hủy và quản lý vé đã bán</p>
+            </a>
+
+            <div class="menu-card disabled">
+                <span class="menu-icon">💰</span>
+                <h3>Quản lý doanh thu <span class="badge">Sắp có</span></h3>
+                <p>Thống kê doanh thu, báo cáo tài chính theo ngày, tháng, năm</p>
+            </div>
+
+            <a href="/admin/buses/" class="menu-card">
+                <span class="menu-icon">🚗</span>
+                <h3>Quản lý xe <span class="badge badge-available">✓</span></h3>
+                <p>Quản lý thông tin xe, số ghế, biển số và tình trạng xe</p>
+            </a>
+
+            <div class="menu-card disabled">
+                <span class="menu-icon">📊</span>
+                <h3>Thống kê & Báo cáo <span class="badge">Sắp có</span></h3>
+                <p>Xem các báo cáo, biểu đồ thống kê về hoạt động kinh doanh</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

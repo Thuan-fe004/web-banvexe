@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết xe - {{ bus.license_plate }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .navbar a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 24px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .bus-image-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .bus-image-large {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .info-section h3 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .amenity-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .notes-section {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+            margin-top: 20px;
+        }
+
+        .notes-section h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .notes-section p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🚌 Chi tiết xe</h1>
+        <a href="/admin/buses/">← Quay lại danh sách</a>
+    </div>
+
+    <div class="container">
+        <div class="detail-card">
+            <div class="card-header">
+                <div>
+                    <h2>{{ bus.bus_company }} - {{ bus.bus_number }}</h2>
+                    <p style="opacity: 0.9; margin-top: 5px;">Biển số: <strong>{{ bus.license_plate }}</strong></p>
+                </div>
+                <div>
+                    {% if bus.status == 'active' %}
+                        <span class="badge badge-success">Hoạt động</span>
+                    {% elif bus.status == 'maintenance' %}
+                        <span class="badge badge-warning">Bảo dưỡng</span>
+                    {% else %}
+                        <span class="badge badge-danger">Ngừng</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Hình ảnh -->
+                {% if bus.bus_image %}
+                <div class="bus-image-section">
+                    <img src="{{ bus.bus_image }}" alt="{{ bus.bus_company }}" class="bus-image-large">
+                </div>
+                {% endif %}
+
+                <!-- Thông tin chi tiết -->
+                <div class="info-grid">
+                    <!-- Thông tin cơ bản -->
+                    <div class="info-section">
+                        <h3>📋 Thông tin cơ bản</h3>
+                        <div class="info-row">
+                            <span class="info-label">Nhà xe:</span>
+                            <span class="info-value">{{ bus.bus_company }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Số hiệu:</span>
+                            <span class="info-value">{{ bus.bus_number }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Biển số:</span>
+                            <span class="info-value">{{ bus.license_plate }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Loại xe:</span>
+                            <span class="info-value">{{ bus.bus_type }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Số ghế:</span>
+                            <span class="info-value">{{ bus.total_seats }} chỗ</span>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin xe -->
+                    <div class="info-section">
+                        <h3>🚗 Thông tin xe</h3>
+                        <div class="info-row">
+                            <span class="info-label">Model:</span>
+                            <span class="info-value">{{ bus.bus_model or 'Chưa cập nhật' }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Năm SX:</span>
+                            <span class="info-value">{{ bus.manufacture_year or 'Chưa cập nhật' }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Tình trạng kỹ thuật:</span>
+                            <span class="info-value">
+                                {% if bus.condition == 'excellent' %}
+                                    <span class="badge badge-success">Xuất sắc</span>
+                                {% elif bus.condition == 'good' %}
+                                    <span class="badge badge-info">Tốt</span>
+                                {% elif bus.condition == 'fair' %}
+                                    <span class="badge badge-warning">Khá</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Kém</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Trạng thái:</span>
+                            <span class="info-value">
+                                {% if bus.is_active %}
+                                    <span class="badge badge-success">Kích hoạt</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Vô hiệu</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Bảo dưỡng -->
+                    <div class="info-section">
+                        <h3>🔧 Bảo dưỡng</h3>
+                        <div class="info-row">
+                            <span class="info-label">Lần gần nhất:</span>
+                            <span class="info-value">
+                                {{ bus.last_maintenance_date.strftime('%d/%m/%Y') if bus.last_maintenance_date else 'Chưa có' }}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Lần tiếp theo:</span>
+                            <span class="info-value">
+                                {{ bus.next_maintenance_date.strftime('%d/%m/%Y') if bus.next_maintenance_date else 'Chưa lên lịch' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Ngày tạo/cập nhật -->
+                    <div class="info-section">
+                        <h3>📅 Thời gian</h3>
+                        <div class="info-row">
+                            <span class="info-label">Ngày tạo:</span>
+                            <span class="info-value">{{ bus.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Cập nhật:</span>
+                            <span class="info-value">{{ bus.updated_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tiện nghi -->
+                {% if bus.amenities %}
+                <div class="info-section">
+                    <h3>✨ Tiện nghi</h3>
+                    <div class="amenities-grid">
+                        {% for amenity in bus.amenities %}
+                        <div class="amenity-item">
+                            ✅ {{ amenity }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Ghi chú -->
+                {% if bus.notes %}
+                <div class="notes-section">
+                    <h3>📝 Ghi chú</h3>
+                    <p>{{ bus.notes }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Nút thao tác -->
+                <div class="action-buttons">
+                    <a href="/admin/buses/edit/{{ bus.id }}" class="btn btn-warning">✏️ Sửa thông tin</a>
+                    <a href="/admin/buses/" class="btn btn-secondary">← Quay lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

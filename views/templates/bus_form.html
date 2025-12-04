@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Thêm xe mới' if action == 'create' else 'Sửa thông tin xe' }} - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-card h2 {
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group label .required {
+            color: #dc3545;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .amenities-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .image-preview {
+            margin-top: 10px;
+            max-width: 300px;
+        }
+
+        .image-preview img {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #667eea !important;
+            color: white !important;
+            border-color: #667eea !important;
+        }
+
+        /* ✅ Style cho validation warning */
+        .invalid-field {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .warning-box strong {
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>{{ '➕ Thêm xe mới' if action == 'create' else '✏️ Sửa thông tin xe' }}</h1>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- ✅ THÔNG BÁO CHÚ Ý -->
+        <div class="warning-box">
+            <strong>⚠️ Lưu ý:</strong> Các trường có dấu <span style="color: #dc3545;">*</span> là bắt buộc phải điền!
+        </div>
+
+        <div class="form-card">
+            <h2>{{ 'Thông tin xe mới' if action == 'create' else 'Chỉnh sửa thông tin xe' }}</h2>
+
+            <form method="POST" enctype="multipart/form-data" id="busForm">
+                <!-- Tuyến đường -->
+                <div class="form-section">
+                    <h3>🗺️ Tuyến đường</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Chọn tuyến <span class="required">*</span></label>
+                            <select name="route_id" required id="route_id">
+                                <option value="" disabled selected>-- Chọn tuyến đường --</option>
+                                {% for route in routes %}
+                                <option value="{{ route.id }}" {% if bus and bus.route_id == route.id %}selected{% endif %}>
+                                    {{ route.departure_point }} → {{ route.arrival_point }} ({{ route.distance if route.distance else '?' }}km)
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <span class="help-text">⚠️ Bắt buộc phải chọn tuyến đường!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin cơ bản -->
+                <div class="form-section">
+                    <h3>📋 Thông tin cơ bản</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tên nhà xe <span class="required">*</span></label>
+                            <input type="text" name="bus_company" required 
+                                   value="{{ bus.bus_company if bus else '' }}"
+                                   placeholder="VD: Phương Trang">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Số hiệu xe <span class="required">*</span></label>
+                            <input type="text" name="bus_number" required 
+                                   value="{{ bus.bus_number if bus else '' }}"
+                                   placeholder="VD: PT-001">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Biển số xe <span class="required">*</span></label>
+                            <input type="text" name="license_plate" required 
+                                   value="{{ bus.license_plate if bus else '' }}"
+                                   placeholder="VD: 51B-12345">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Loại xe <span class="required">*</span></label>
+                            <select name="bus_type" required id="bus_type">
+                                <option value="" disabled selected>-- Chọn loại xe --</option>
+                                <option value="Limousine 16 chỗ" {% if bus and bus.bus_type == 'Limousine 16 chỗ' %}selected{% endif %}>Limousine 16 chỗ</option>
+                                <option value="Limousine 20 chỗ" {% if bus and bus.bus_type == 'Limousine 20 chỗ' %}selected{% endif %}>Limousine 20 chỗ</option>
+                                <option value="Limousine 24 Phòng Đôi" {% if bus and bus.bus_type == 'Limousine 24 Phòng Đôi' %}selected{% endif %}>Limousine 24 Phòng Đôi</option>
+                                <option value="Giường nằm 40 chỗ" {% if bus and bus.bus_type == 'Giường nằm 40 chỗ' %}selected{% endif %}>Giường nằm 40 chỗ</option>
+                                <option value="Ghế ngồi 45 chỗ" {% if bus and bus.bus_type == 'Ghế ngồi 45 chỗ' %}selected{% endif %}>Ghế ngồi 45 chỗ</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Số ghế <span class="required">*</span></label>
+                            <input type="number" name="total_seats" required min="1" max="100"
+                                   value="{{ bus.total_seats if bus else '' }}"
+                                   placeholder="VD: 40" id="total_seats">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Model xe</label>
+                            <input type="text" name="bus_model" 
+                                   value="{{ bus.bus_model if bus else '' }}"
+                                   placeholder="VD: Hyundai Universe">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Năm sản xuất</label>
+                            <input type="number" name="manufacture_year" min="2000" max="2030"
+                                   value="{{ bus.manufacture_year if bus else '' }}"
+                                   placeholder="VD: 2023">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Giờ và giá -->
+                <div class="form-section">
+                    <h3>🕐 Giờ và giá</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Giờ khởi hành <span class="required">*</span></label>
+                            <input type="time" name="departure_time" required
+                                   value="{{ bus.departure_time if bus else '' }}" id="departure_time">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Giờ đến (dự kiến)</label>
+                            <input type="time" name="arrival_time"
+                                   value="{{ bus.arrival_time if bus else '' }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Thời gian di chuyển</label>
+                            <input type="text" name="duration"
+                                   value="{{ bus.duration if bus else '' }}"
+                                   placeholder="VD: 8h30m hoặc 12h">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Giá vé (VNĐ) <span class="required">*</span></label>
+                            <input type="number" name="price" required min="0"
+                                   value="{{ bus.price if bus else '' }}"
+                                   placeholder="VD: 450000" id="price">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Giảm giá (%)</label>
+                            <input type="number" name="discount_percent" min="0" max="100" step="0.1"
+                                   value="{{ bus.discount_percent if bus else '0' }}"
+                                   placeholder="VD: 10">
+                            <span class="help-text">Để 0 nếu không giảm giá</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tình trạng xe -->
+                <div class="form-section">
+                    <h3>⚙️ Tình trạng</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Trạng thái <span class="required">*</span></label>
+                            <select name="status" required>
+                                <option value="active" {% if not bus or bus.status == 'active' %}selected{% endif %}>Hoạt động</option>
+                                <option value="maintenance" {% if bus and bus.status == 'maintenance' %}selected{% endif %}>Bảo dưỡng</option>
+                                <option value="inactive" {% if bus and bus.status == 'inactive' %}selected{% endif %}>Ngừng hoạt động</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tình trạng kỹ thuật</label>
+                            <select name="condition">
+                                <option value="excellent" {% if not bus or bus.condition == 'excellent' %}selected{% endif %}>Xuất sắc</option>
+                                <option value="good" {% if bus and bus.condition == 'good' %}selected{% endif %}>Tốt</option>
+                                <option value="fair" {% if bus and bus.condition == 'fair' %}selected{% endif %}>Khá</option>
+                                <option value="poor" {% if bus and bus.condition == 'poor' %}selected{% endif %}>Kém</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Bảo dưỡng gần nhất</label>
+                            <input type="date" name="last_maintenance_date"
+                                   value="{{ bus.last_maintenance_date if bus else '' }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Bảo dưỡng kế tiếp</label>
+                            <input type="date" name="next_maintenance_date"
+                                   value="{{ bus.next_maintenance_date if bus else '' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tiện nghi -->
+                <div class="form-section">
+                    <h3>✨ Tiện nghi</h3>
+                    <div class="amenities-group">
+                        {% set amenities_list = ['Wifi miễn phí', 'Nước uống', 'Điều hòa', 'Giường nằm', 'Chăn gối', 'Ghế massage', 'Tivi', 'Sạc điện thoại', 'WC'] %}
+                        {% for amenity in amenities_list %}
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="amenities" value="{{ amenity }}" id="amenity-{{ loop.index }}"
+                                   {% if bus and bus.amenities and amenity in bus.amenities %}checked{% endif %}>
+                            <label for="amenity-{{ loop.index }}">{{ amenity }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Hình ảnh -->
+                <div class="form-section">
+                    <h3>📷 Hình ảnh xe</h3>
+                    <div class="form-group full-width">
+                        <!-- Preview ảnh -->
+                        <div id="imagePreview" style="margin-bottom: 10px; display: none;">
+                            <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                            <button type="button" onclick="clearImage()" style="display: block; margin-top: 5px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                                ✕ Xóa ảnh
+                            </button>
+                        </div>
+                        
+                        <!-- Tabs -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <button type="button" class="tab-btn active" onclick="switchTab('url')" id="urlTab">
+                                🔗 Nhập URL
+                            </button>
+                            <button type="button" class="tab-btn" onclick="switchTab('file')" id="fileTab">
+                                📁 Chọn file
+                            </button>
+                        </div>
+                        
+                        <!-- Input URL -->
+                        <div id="urlInput" style="display: block;">
+                            <input type="text" id="bus_image" name="bus_image" placeholder="Nhập URL ảnh" onchange="previewImageUrl(this.value)" style="padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; width: 100%;">
+                            <small style="color: #999; font-size: 12px;">Nhập đường dẫn URL của ảnh xe</small>
+                        </div>
+                        
+                        <!-- Input File -->
+                        <div id="fileInput" style="display: none;">
+                            <input type="file" id="bus_image_file" name="bus_image_file" accept="image/*" onchange="previewImageFile(this)" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
+                            <small style="color: #999; font-size: 12px;">Chọn file ảnh (PNG, JPG, JPEG, GIF, WEBP)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chính sách và Ghi chú -->
+                <div class="form-section">
+                    <h3>📝 Chính sách & Ghi chú</h3>
+                    <div class="form-group full-width">
+                        <label>Chính sách xe</label>
+                        <textarea name="policies" placeholder="VD: Cho phép hủy trước 24h, không hoàn tiền...">{{ bus.policies if bus else '' }}</textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Ghi chú</label>
+                        <textarea name="notes" placeholder="Nhập ghi chú về xe (tùy chọn)">{{ bus.notes if bus else '' }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Kích hoạt -->
+                <div class="form-section">
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="is_active" id="is_active" 
+                               {% if not bus or bus.is_active %}checked{% endif %}>
+                        <label for="is_active">Kích hoạt xe</label>
+                    </div>
+                </div>
+
+                <!-- Nút submit -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        {{ '➕ Thêm xe' if action == 'create' else '💾 Lưu thay đổi' }}
+                    </button>
+                    <a href="/admin/buses/" class="btn btn-secondary">❌ Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ✅ VALIDATION TRƯỚC KHI SUBMIT
+        document.getElementById('busForm').addEventListener('submit', function(e) {
+            let isValid = true;
+            let errorMsg = '';
+            
+            // Kiểm tra route_id
+            const routeId = document.getElementById('route_id').value;
+            if (!routeId || routeId === '') {
+                isValid = false;
+                errorMsg += '❌ Vui lòng chọn tuyến đường!\n';
+                document.getElementById('route_id').classList.add('invalid-field');
+            } else {
+                document.getElementById('route_id').classList.remove('invalid-field');
+            }
+            
+            // Kiểm tra loại xe
+            const busType = document.getElementById('bus_type').value;
+            if (!busType || busType === '') {
+                isValid = false;
+                errorMsg += '❌ Vui lòng chọn loại xe!\n';
+                document.getElementById('bus_type').classList.add('invalid-field');
+            } else {
+                document.getElementById('bus_type').classList.remove('invalid-field');
+            }
+            
+            // Kiểm tra số ghế
+            const totalSeats = document.getElementById('total_seats').value;
+            if (!totalSeats || totalSeats <= 0) {
+                isValid = false;
+                errorMsg += '❌ Số ghế phải lớn hơn 0!\n';
+                document.getElementById('total_seats').classList.add('invalid-field');
+            } else {
+                document.getElementById('total_seats').classList.remove('invalid-field');
+            }
+            
+            // Kiểm tra giờ khởi hành
+            const departureTime = document.getElementById('departure_time').value;
+            if (!departureTime) {
+                isValid = false;
+                errorMsg += '❌ Vui lòng nhập giờ khởi hành!\n';
+                document.getElementById('departure_time').classList.add('invalid-field');
+            } else {
+                document.getElementById('departure_time').classList.remove('invalid-field');
+            }
+            
+            // Kiểm tra giá vé
+            const price = document.getElementById('price').value;
+            if (!price || price <= 0) {
+                isValid = false;
+                errorMsg += '❌ Giá vé phải lớn hơn 0!\n';
+                document.getElementById('price').classList.add('invalid-field');
+            } else {
+                document.getElementById('price').classList.remove('invalid-field');
+            }
+            
+            // Nếu có lỗi, ngăn submit và hiển thị
+            if (!isValid) {
+                e.preventDefault();
+                alert(errorMsg);
+                // Scroll đến trường lỗi đầu tiên
+                const firstInvalid = document.querySelector('.invalid-field');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstInvalid.focus();
+                }
+                return false;
+            }
+            
+            return true;
+        });
+        
+        // ✅ XỬ LÝ PREVIEW ẢNH
+        function switchTab(mode) {
+            const urlTab = document.getElementById('urlTab');
+            const fileTab = document.getElementById('fileTab');
+            const urlInput = document.getElementById('urlInput');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (mode === 'url') {
+                urlTab.classList.add('active');
+                fileTab.classList.remove('active');
+                urlInput.style.display = 'block';
+                fileInput.style.display = 'none';
+                document.getElementById('bus_image_file').value = '';
+            } else {
+                fileTab.classList.add('active');
+                urlTab.classList.remove('active');
+                fileInput.style.display = 'block';
+                urlInput.style.display = 'none';
+                document.getElementById('bus_image').value = '';
+            }
+        }
+        
+        function previewImageUrl(url) {
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (url && url.trim() !== '') {
+                previewImg.src = url;
+                preview.style.display = 'block';
+                previewImg.onerror = function() {
+                    preview.style.display = 'none';
+                    alert('Không thể tải ảnh từ URL này!');
+                };
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        function previewImageFile(input) {
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        function clearImage() {
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('previewImg').src = '';
+            document.getElementById('bus_image').value = '';
+            document.getElementById('bus_image_file').value = '';
+        }
+
+        // Hiển thị preview nếu đang edit và có ảnh
+        {% if bus and bus.bus_image %}
+        window.onload = function() {
+            previewImageUrl('{{ bus.bus_image }}');
+        };
+        {% endif %}
+    </script>
+</body>
+</html>

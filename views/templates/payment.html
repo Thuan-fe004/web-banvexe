@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - Đặt vé xe khách</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 { font-size: 24px; }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        /* Left: Payment Methods */
+        .payment-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .trip-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .trip-route {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .trip-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            gap: 15px;
+        }
+
+        .payment-method {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .payment-method.active {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+
+        .payment-method input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .payment-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .payment-details {
+            flex: 1;
+        }
+
+        .payment-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .payment-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .payment-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 30px;
+        }
+
+        .payment-info-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-info-content {
+            font-size: 14px;
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        /* Right: Order Summary */
+        .order-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .seat-list {
+            margin-bottom: 20px;
+        }
+
+        .seat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .seat-number {
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .seat-price {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .price-breakdown {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .price-row.total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            padding-top: 10px;
+            border-top: 2px solid #ddd;
+            margin-top: 10px;
+        }
+
+        .price-value {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .passenger-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .passenger-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .passenger-label {
+            color: #666;
+        }
+
+        .passenger-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-pay {
+            width: 100%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-back {
+            width: 100%;
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+        }
+
+        .countdown {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .countdown-title {
+            font-size: 14px;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        .countdown-time {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>💳 Thanh toán</h1>
+    </div>
+
+    <div class="container">
+        <!-- Left: Payment Methods -->
+        <div class="payment-section">
+            <h2 class="section-title">Thông tin chuyến đi</h2>
+            
+            <div class="trip-summary">
+                <div class="trip-route">
+                    {{ trip.departure_city }} → {{ trip.arrival_city }}
+                </div>
+                <div class="trip-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Nhà xe</span>
+                        <span class="info-value">{{ trip.bus_company }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Loại xe</span>
+                        <span class="info-value">{{ trip.bus_type }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Ngày đi</span>
+                        <span class="info-value">{{ booking_temp.travel_date }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Giờ khởi hành</span>
+                        <span class="info-value">{{ trip.departure_time }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Chọn phương thức thanh toán</h2>
+            
+            <form id="paymentForm" method="POST" action="/booking/payment-qr">
+                <div class="payment-methods">
+                    <label class="payment-method active">
+                        <input type="radio" name="payment_method" value="cash" checked>
+                        <div class="payment-icon">💵</div>
+                        <div class="payment-details">
+                            <div class="payment-name">Tiền mặt</div>
+                            <div class="payment-desc">Thanh toán khi lên xe</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-method">
+                        <input type="radio" name="payment_method" value="bank_transfer">
+                        <div class="payment-icon">🏦</div>
+                        <div class="payment-details">
+                            <div class="payment-name">Chuyển khoản ngân hàng</div>
+                            <div class="payment-desc">Chuyển khoản qua số tài khoản</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-method">
+                        <input type="radio" name="payment_method" value="momo">
+                        <div class="payment-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
+                        <div class="payment-details">
+                            <div class="payment-name">Ví MoMo</div>
+                            <div class="payment-desc">Thanh toán qua ví điện tử MoMo</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-method">
+                        <input type="radio" name="payment_method" value="vnpay">
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-details">
+                            <div class="payment-name">VNPay</div>
+                            <div class="payment-desc">Thanh toán qua VNPay QR</div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="payment-info">
+                    <div class="payment-info-title">
+                        ℹ️ Lưu ý quan trọng
+                    </div>
+                    <div class="payment-info-content">
+                        • Vé sẽ được giữ trong 10 phút<br>
+                        • Vui lòng hoàn tất thanh toán trước khi hết thời gian<br>
+                        • Sau khi thanh toán, vé sẽ được gửi qua email/SMS<br>
+                        • Vui lòng mang theo CMND/CCCD khi lên xe
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="order-summary">
+            <div class="countdown">
+                <div class="countdown-title">⏰ Thời gian giữ vé</div>
+                <div class="countdown-time" id="countdown">10:00</div>
+            </div>
+
+            <h3 class="summary-title">Chi tiết đơn hàng</h3>
+
+            <!-- Passenger Info -->
+            <div class="passenger-info">
+                <div class="passenger-row">
+                    <span class="passenger-label">Họ tên:</span>
+                    <span class="passenger-value">{{ booking_temp.passenger_name }}</span>
+                </div>
+                <div class="passenger-row">
+                    <span class="passenger-label">SĐT:</span>
+                    <span class="passenger-value">{{ booking_temp.passenger_phone }}</span>
+                </div>
+                {% if booking_temp.passenger_email %}
+                <div class="passenger-row">
+                    <span class="passenger-label">Email:</span>
+                    <span class="passenger-value">{{ booking_temp.passenger_email }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Seat List -->
+            <div class="seat-list">
+                {% for seat in booking_temp.selected_seats %}
+                <div class="seat-item">
+                    <span class="seat-number">Ghế {{ seat }}</span>
+                    <span class="seat-price">{{ "{:,.0f}".format(booking_temp.price_per_seat) }}đ</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Số ghế:</span>
+                    <span>{{ booking_temp.total_seats }}</span>
+                </div>
+                <div class="price-row">
+                    <span>Giá vé/ghế:</span>
+                    <span class="price-value">{{ "{:,.0f}".format(booking_temp.price_per_seat) }}đ</span>
+                </div>
+                <div class="price-row total">
+                    <span>Tổng cộng:</span>
+                    <span class="price-value">{{ "{:,.0f}".format(booking_temp.total_price) }}đ</span>
+                </div>
+            </div>
+
+            <button type="submit" form="paymentForm" class="btn-pay">
+                💳 Xác nhận thanh toán
+            </button>
+            
+            <a href="javascript:history.back()" class="btn-back">
+                ← Quay lại
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+                this.classList.add('active');
+                this.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+
+        // Countdown timer (10 minutes)
+        let timeLeft = 10 * 60; // 10 minutes in seconds
+
+        function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            document.getElementById('countdown').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                alert('Hết thời gian giữ vé! Vui lòng đặt lại.');
+                window.location.href = '/';
+            } else if (timeLeft <= 60) {
+                document.getElementById('countdown').style.color = '#dc3545';
+            }
+            
+            timeLeft--;
+        }
+
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>

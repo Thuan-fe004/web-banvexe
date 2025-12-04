@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả tìm kiếm - {{ departure }} đến {{ arrival }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            color: #333;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar h1 a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Search Box Sticky */
+        .search-box-sticky {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .search-form {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr auto 2fr 1.5fr auto;
+            gap: 0;
+            align-items: center;
+        }
+
+        .form-group {
+            padding: 0 15px;
+            position: relative;
+        }
+
+        .form-group::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 40px;
+            width: 1px;
+            background: #e0e0e0;
+        }
+
+        .form-group:last-of-type::after {
+            display: none;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-group input {
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 5px 0;
+            width: 100%;
+        }
+
+        .swap-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .btn-search {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+        }
+
+        /* Sidebar Filters */
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-section {
+            margin-bottom: 30px;
+        }
+
+        .filter-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-section h3 button {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .filter-option input[type="checkbox"],
+        .filter-option input[type="radio"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .filter-option label {
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .price-range input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .results-header h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .results-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sort-btn {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .sort-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Trip Cards */
+        .trip-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .trip-card.visible {
+            display: block;
+        }
+
+        .trip-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            overflow: hidden;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .company-details h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .company-details p {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .rating {
+            color: #ffc107;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .price-box {
+            text-align: right;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .final-price {
+            font-size: 24px;
+            color: #dc3545;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .discount-badge {
+            background: #dc3545;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .trip-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .trip-time {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .time-info {
+            text-align: center;
+        }
+
+        .time-info .time {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .time-info .location {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .duration {
+            font-size: 13px;
+            color: #999;
+            text-align: center;
+        }
+
+        .seats-available {
+            color: #28a745;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-book {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-book:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-results h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .form-group::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>
+            <a href="/">🚌 Đặt vé xe khách</a>
+        </h1>
+        <div class="user-info">
+            <span>👤 {{ user.full_name if user.full_name else user.username }}</span>
+            <a href="/logout" class="btn-logout">Đăng xuất</a>
+        </div>
+    </div>
+
+    <!-- Search Box Sticky -->
+    <div class="search-box-sticky">
+        <form class="search-form" method="GET" action="/search">
+            <div class="form-group">
+                <label>Nơi xuất phát</label>
+                <input type="text" name="departure" value="{{ departure }}" required>
+            </div>
+
+            <button type="button" class="swap-btn" onclick="swapLocations()">⇄</button>
+
+            <div class="form-group">
+                <label>Nơi đến</label>
+                <input type="text" name="arrival" value="{{ arrival }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Ngày đi</label>
+                <input type="date" name="date" value="{{ date }}" required>
+            </div>
+
+            <button type="submit" class="btn-search">Tìm kiếm</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar Filters -->
+        <div class="sidebar">
+            <div class="filter-section">
+                <h3>
+                    Bộ lọc
+                    <button onclick="clearAllFilters()">Xóa tất cả</button>
+                </h3>
+            </div>
+
+            <div class="filter-section">
+                <h3>Giờ khởi hành</h3>
+                <div class="filter-option">
+                    <input type="checkbox" id="time_morning" value="morning" onchange="applyFilters()">
+                    <label for="time_morning">
+                        <span>🌅 Sáng sớm (00:00 - 06:00)</span>
+                    </label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="time_day" value="day" onchange="applyFilters()">
+                    <label for="time_day">
+                        <span>☀️ Buổi sáng (06:00 - 12:00)</span>
+                    </label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="time_afternoon" value="afternoon" onchange="applyFilters()">
+                    <label for="time_afternoon">
+                        <span>🌤️ Buổi chiều (12:00 - 18:00)</span>
+                    </label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="time_evening" value="evening" onchange="applyFilters()">
+                    <label for="time_evening">
+                        <span>🌙 Buổi tối (18:00 - 24:00)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Loại xe</h3>
+                <div class="filter-option">
+                    <input type="checkbox" id="type_limousine" value="Limousine" onchange="applyFilters()">
+                    <label for="type_limousine">Limousine</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="type_sleeper" value="Giường nằm" onchange="applyFilters()">
+                    <label for="type_sleeper">Giường nằm</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="type_seat" value="Ghế ngồi" onchange="applyFilters()">
+                    <label for="type_seat">Ghế ngồi</label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Khoảng giá</h3>
+                <div class="price-range">
+                    <input type="number" id="min_price" placeholder="Từ" value="0" onchange="applyFilters()">
+                    <span>-</span>
+                    <input type="number" id="max_price" placeholder="Đến" value="1000000" onchange="applyFilters()">
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Đánh giá</h3>
+                <div class="filter-option">
+                    <input type="checkbox" id="rating_5" value="5" onchange="applyFilters()">
+                    <label for="rating_5">⭐⭐⭐⭐⭐ (5 sao)</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="rating_4" value="4" onchange="applyFilters()">
+                    <label for="rating_4">⭐⭐⭐⭐ (4 sao trở lên)</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="rating_3" value="3" onchange="applyFilters()">
+                    <label for="rating_3">⭐⭐⭐ (3 sao trở lên)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <div>
+                    <h2>Kết quả: <span id="result-count">{{ trips|length if trips else 0 }}</span> chuyến</h2>
+                    <p class="results-info">{{ departure }} → {{ arrival }} • {{ date }}</p>
+                </div>
+                <div class="sort-options">
+                    <button class="sort-btn active" onclick="sortBy('default')">Mặc định</button>
+                    <button class="sort-btn" onclick="sortBy('price_asc')">Giá tăng dần</button>
+                    <button class="sort-btn" onclick="sortBy('time_asc')">Giờ đi sớm nhất</button>
+                    <button class="sort-btn" onclick="sortBy('rating')">Đánh giá cao</button>
+                </div>
+            </div>
+
+            <div id="trips-container">
+                {% if trips %}
+                    {% for trip in trips %}
+                    <div class="trip-card visible" 
+                         data-time="{{ trip.departure_time }}"
+                         data-type="{{ trip.bus_type }}"
+                         data-price="{{ trip.final_price }}"
+                         data-rating="{{ trip.rating }}"
+                         data-company="{{ trip.bus_company }}">
+                        <div class="trip-header">
+                            <div class="company-info">
+                                <div class="company-logo">
+                                    {% if trip.bus_image %}
+                                        <img src="{{ trip.bus_image }}" alt="{{ trip.bus_company }}">
+                                    {% else %}
+                                        🚌
+                                    {% endif %}
+                                </div>
+                                <div class="company-details">
+                                    <h3>{{ trip.bus_company }}</h3>
+                                    <p>{{ trip.bus_type }}</p>
+                                    <div class="rating">⭐ {{ "{:.1f}".format(trip.rating) }}</div>
+                                </div>
+                            </div>
+                            <div class="price-box">
+                                {% if trip.discount_percent > 0 %}
+                                    <div class="old-price">{{ "{:,.0f}".format(trip.price) }}đ</div>
+                                    <div class="final-price">{{ "{:,.0f}".format(trip.final_price) }}đ</div>
+                                    <span class="discount-badge">-{{ trip.discount_percent }}%</span>
+                                {% else %}
+                                    <div class="final-price">{{ "{:,.0f}".format(trip.price) }}đ</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="trip-details">
+                            <div class="trip-time">
+                                <div class="time-info">
+                                    <div class="time">{{ trip.departure_time }}</div>
+                                    <div class="location">{{ trip.departure_point }}</div>
+                                </div>
+                                <div class="duration">
+                                    <div>⏱️</div>
+                                    <div>{{ trip.duration_hours if trip.duration_hours else trip.duration }}</div>
+                                </div>
+                                <div class="time-info">
+                                    <div class="time">{{ trip.arrival_time if trip.arrival_time else '—' }}</div>
+                                    <div class="location">{{ trip.arrival_point }}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="seats-available">Còn {{ trip.available_seats }} chỗ</div>
+                                <button class="btn-book" onclick="bookTrip({{ trip.trip_id }}, '{{ date }}')">
+                                    Chọn chuyến
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-results">
+                        <h3>😔 Không tìm thấy chuyến xe phù hợp</h3>
+                        <p>Vui lòng thử tìm kiếm với điểm khác hoặc ngày khác.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allTrips = [];
+        
+        // Load all trips on page load
+        window.onload = function() {
+            const tripCards = document.querySelectorAll('.trip-card');
+            tripCards.forEach(card => {
+                allTrips.push({
+                    element: card,
+                    time: card.dataset.time,
+                    type: card.dataset.type,
+                    price: parseFloat(card.dataset.price),
+                    rating: parseFloat(card.dataset.rating),
+                    company: card.dataset.company
+                });
+            });
+        };
+
+        function applyFilters() {
+            let visibleCount = 0;
+
+            allTrips.forEach(trip => {
+                let show = true;
+
+                // Filter by time
+                const timeFilters = ['morning', 'day', 'afternoon', 'evening'];
+                const checkedTimes = timeFilters.filter(t => document.getElementById('time_' + t).checked);
+                
+                if (checkedTimes.length > 0) {
+                    const hour = parseInt(trip.time.split(':')[0]);
+                    let matchTime = false;
+                    
+                    if (checkedTimes.includes('morning') && hour >= 0 && hour < 6) matchTime = true;
+                    if (checkedTimes.includes('day') && hour >= 6 && hour < 12) matchTime = true;
+                    if (checkedTimes.includes('afternoon') && hour >= 12 && hour < 18) matchTime = true;
+                    if (checkedTimes.includes('evening') && hour >= 18 && hour < 24) matchTime = true;
+                    
+                    if (!matchTime) show = false;
+                }
+
+                // Filter by bus type
+                const typeFilters = ['limousine', 'sleeper', 'seat'];
+                const checkedTypes = typeFilters.filter(t => document.getElementById('type_' + t).checked);
+                
+                if (checkedTypes.length > 0) {
+                    let matchType = false;
+                    if (checkedTypes.includes('limousine') && trip.type.includes('Limousine')) matchType = true;
+                    if (checkedTypes.includes('sleeper') && trip.type.includes('Giường')) matchType = true;
+                    if (checkedTypes.includes('seat') && trip.type.includes('Ghế')) matchType = true;
+                    
+                    if (!matchType) show = false;
+                }
+
+                // Filter by price
+                const minPrice = parseFloat(document.getElementById('min_price').value) || 0;
+                const maxPrice = parseFloat(document.getElementById('max_price').value) || 1000000;
+                
+                if (trip.price < minPrice || trip.price > maxPrice) show = false;
+
+                // Filter by rating
+                const ratingFilters = ['5', '4', '3'];
+                const checkedRatings = ratingFilters.filter(r => document.getElementById('rating_' + r).checked);
+                
+                if (checkedRatings.length > 0) {
+                    const minRating = Math.min(...checkedRatings.map(r => parseFloat(r)));
+                    if (trip.rating < minRating) show = false;
+                }
+
+                // Show/hide trip
+                if (show) {
+                    trip.element.classList.add('visible');
+                    visibleCount++;
+                } else {
+                    trip.element.classList.remove('visible');
+                }
+            });
+
+            document.getElementById('result-count').textContent = visibleCount;
+        }
+
+        function sortBy(type) {
+            // Update active button
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const container = document.getElementById('trips-container');
+            const trips = Array.from(container.querySelectorAll('.trip-card.visible'));
+
+            trips.sort((a, b) => {
+                switch(type) {
+                    case 'price_asc':
+                        return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                    case 'time_asc':
+                        return a.dataset.time.localeCompare(b.dataset.time);
+                    case 'rating':
+                        return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                    default:
+                        return 0;
+                }
+            });
+
+            trips.forEach(trip => container.appendChild(trip));
+        }
+
+        function clearAllFilters() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('min_price').value = 0;
+            document.getElementById('max_price').value = 1000000;
+            applyFilters();
+        }
+
+        function swapLocations() {
+            const departure = document.querySelector('input[name="departure"]');
+            const arrival = document.querySelector('input[name="arrival"]');
+            const temp = departure.value;
+            departure.value = arrival.value;
+            arrival.value = temp;
+        }
+
+        function bookTrip(tripId, travelDate) {
+            window.location.href = `/booking/${tripId}?date=${travelDate}`;
+        }
+    </script>
+</body>
+</html>

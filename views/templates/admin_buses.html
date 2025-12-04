@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý xe - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar h1 a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .bus-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                min-width: 1000px;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>
+            <a href="/admin">
+                <span>🚌</span>
+                Admin Dashboard
+            </a>
+        </h1>
+        <div class="user-info">
+            <span>👤 {{ user.full_name if user.full_name else user.username }} (Admin)</span>
+            <a href="/logout" class="btn-logout">Đăng xuất</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="info-box">
+            <p>ℹ️ <strong>Lưu ý:</strong> Xe phải thuộc về một tuyến đường. Mỗi xe có giá, giờ khởi hành, và ảnh riêng.</p>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="header-section">
+            <h2>📊 Thống kê tổng quan</h2>
+            {% if stats %}
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>{{ stats.total_buses }}</h3>
+                    <p>Tổng số xe</p>
+                </div>
+                <div class="stat-card">
+                    <h3>{{ stats.active_buses }}</h3>
+                    <p>Xe hoạt động</p>
+                </div>
+                <div class="stat-card">
+                    <h3>{{ stats.maintenance_buses }}</h3>
+                    <p>Xe bảo dưỡng</p>
+                </div>
+                <div class="stat-card">
+                    <h3>{{ stats.total_companies }}</h3>
+                    <p>Nhà xe</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Thanh tìm kiếm -->
+        <div class="search-box">
+            <form method="GET" action="/admin/buses/" class="search-form">
+                <div class="form-group">
+                    <label>Tuyến đường</label>
+                    <select name="route_id">
+                        <option value="">Tất cả tuyến</option>
+                        {% for route in routes %}
+                        <option value="{{ route.id }}" {% if filters and filters.route_id == route.id|string %}selected{% endif %}>
+                            {{ route.departure_point }} → {{ route.arrival_point }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tên nhà xe</label>
+                    <input type="text" name="bus_company" placeholder="Tìm theo tên nhà xe" 
+                           value="{{ filters.bus_company if filters else '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Biển số xe</label>
+                    <input type="text" name="license_plate" placeholder="VD: 51B-12345" 
+                           value="{{ filters.license_plate if filters else '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Trạng thái</label>
+                    <select name="status">
+                        <option value="">Tất cả</option>
+                        <option value="active" {% if filters and filters.status == 'active' %}selected{% endif %}>Hoạt động</option>
+                        <option value="maintenance" {% if filters and filters.status == 'maintenance' %}selected{% endif %}>Bảo dưỡng</option>
+                        <option value="inactive" {% if filters and filters.status == 'inactive' %}selected{% endif %}>Ngừng hoạt động</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+                </div>
+                <div class="form-group">
+                    <a href="/admin/buses/" class="btn btn-secondary">🔄 Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Nút thêm xe -->
+        <div class="actions-bar">
+            <h3>Danh sách xe ({{ buses|length }} xe)</h3>
+            <div style="display: flex; gap: 10px;">
+                <a href="/admin/routes/" class="btn btn-secondary">🗺️ Quản lý tuyến</a>
+                <a href="/admin/buses/create" class="btn btn-success">➕ Thêm xe mới</a>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách -->
+        <div class="table-container" style="margin-top: 20px;">
+            {% if buses %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ảnh</th>
+                        <th>Tuyến đường</th>
+                        <th>Nhà xe</th>
+                        <th>Biển số</th>
+                        <th>Loại xe</th>
+                        <th>Số ghế</th>
+                        <th>Giờ đi</th>
+                        <th>Giá</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bus in buses %}
+                    <tr>
+                        <td>#{{ bus.id }}</td>
+                        <td>
+                            {% if bus.bus_image %}
+                                <img src="{{ bus.bus_image }}" alt="Bus" class="bus-image">
+                            {% else %}
+                                <div class="bus-image" style="background: #e9ecef; display: flex; align-items: center; justify-content: center;">🚌</div>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ bus.departure_point }} → {{ bus.arrival_point }}</strong></td>
+                        <td>{{ bus.bus_company }}</td>
+                        <td><strong>{{ bus.license_plate }}</strong></td>
+                        <td>{{ bus.bus_type }}</td>
+                        <td>{{ bus.total_seats }} chỗ</td>
+                        <td>{{ bus.departure_time if bus.departure_time else 'N/A' }}</td>
+                        <td>
+                            {% if bus.discount_percent and bus.discount_percent > 0 %}
+                                <span style="text-decoration: line-through; color: #999;">{{ "{:,.0f}".format(bus.price) }}đ</span><br>
+                                <strong style="color: #dc3545;">{{ "{:,.0f}".format(bus.final_price) }}đ</strong>
+                                <span class="badge badge-danger">-{{ bus.discount_percent }}%</span>
+                            {% else %}
+                                <strong>{{ "{:,.0f}".format(bus.price) }}đ</strong>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if bus.status == 'active' %}
+                                <span class="badge badge-success">Hoạt động</span>
+                            {% elif bus.status == 'maintenance' %}
+                                <span class="badge badge-warning">Bảo dưỡng</span>
+                            {% else %}
+                                <span class="badge badge-danger">Ngừng</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <a href="/admin/buses/view/{{ bus.id }}" class="btn btn-primary btn-sm">👁️</a>
+                                <a href="/admin/buses/edit/{{ bus.id }}" class="btn btn-warning btn-sm">✏️</a>
+                                <form method="POST" action="/admin/buses/delete/{{ bus.id }}" 
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa xe này?')"
+                                      style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-data">
+                <p>📭 Không có xe nào trong hệ thống</p>
+                <a href="/admin/buses/create" class="btn btn-success" style="margin-top: 15px;">➕ Thêm xe đầu tiên</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

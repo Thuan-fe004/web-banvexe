@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vé của tôi - Quản lý đặt vé</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .navbar a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        /* Booking Card */
+        .booking-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .booking-code-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .booking-code {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .booking-date {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .booking-body {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        .trip-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .route-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .route-city {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .route-arrow {
+            font-size: 24px;
+            color: #667eea;
+        }
+
+        .trip-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .seats-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .seat-tag {
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .booking-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .summary-label {
+            color: #666;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+            padding-top: 12px;
+            border-top: 2px solid #e0e0e0;
+            margin-top: 12px;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #138496;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #c82333;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .btn-book-now {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-book-now:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .booking-body {
+                grid-template-columns: 1fr;
+            }
+
+            .trip-details {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>📋 Vé của tôi</h1>
+        <a href="/">🏠 Trang chủ</a>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Quản lý vé của tôi</h1>
+            <p class="page-subtitle">Xem và quản lý tất cả các chuyến đi của bạn</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="tab-btn active" onclick="filterBookings('all')">
+                Tất cả
+            </button>
+            <button class="tab-btn" onclick="filterBookings('upcoming')">
+                Sắp đi
+            </button>
+            <button class="tab-btn" onclick="filterBookings('completed')">
+                Đã đi
+            </button>
+            <button class="tab-btn" onclick="filterBookings('cancelled')">
+                Đã hủy
+            </button>
+        </div>
+
+        <!-- Bookings List -->
+        <div id="bookingsList">
+            {% if bookings and bookings|length > 0 %}
+                {% for booking in bookings %}
+                <div class="booking-card" data-status="{{ booking.booking_status }}" data-date="{{ booking.trip_date if booking.trip_date else booking.travel_date }}">
+                    <div class="booking-header">
+                        <div class="booking-code-section">
+                            <div class="booking-code">{{ booking.booking_code }}</div>
+                            <div class="booking-date">
+                                Đặt ngày: {{ booking.created_at.strftime('%d/%m/%Y %H:%M') if booking.created_at else 'N/A' }}
+                            </div>
+                        </div>
+                        <div class="status-badge status-{{ booking.booking_status }}">
+                            {% if booking.booking_status == 'pending' %}⏳ Chờ xác nhận
+                            {% elif booking.booking_status == 'confirmed' %}✅ Đã xác nhận
+                            {% elif booking.booking_status == 'cancelled' %}❌ Đã hủy
+                            {% elif booking.booking_status == 'completed' %}✓ Hoàn thành
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="booking-body">
+                        <div class="trip-info">
+                            {% if booking.departure_city and booking.arrival_city %}
+                            <div class="route-display">
+                                <div class="route-city">{{ booking.departure_city }}</div>
+                                <div class="route-arrow">→</div>
+                                <div class="route-city">{{ booking.arrival_city }}</div>
+                            </div>
+                            {% endif %}
+
+                            <div class="trip-details">
+                                {% if booking.bus_company %}
+                                <div class="detail-item">
+                                    <span class="detail-label">Nhà xe</span>
+                                    <span class="detail-value">{{ booking.bus_company }}</span>
+                                </div>
+                                {% endif %}
+                                {% if booking.bus_type %}
+                                <div class="detail-item">
+                                    <span class="detail-label">Loại xe</span>
+                                    <span class="detail-value">{{ booking.bus_type }}</span>
+                                </div>
+                                {% endif %}
+                                {% if booking.trip_date or booking.travel_date %}
+                                <div class="detail-item">
+                                    <span class="detail-label">Ngày đi</span>
+                                    <span class="detail-value">{{ booking.trip_date if booking.trip_date else booking.travel_date }}</span>
+                                </div>
+                                {% endif %}
+                                {% if booking.departure_time %}
+                                <div class="detail-item">
+                                    <span class="detail-label">Giờ khởi hành</span>
+                                    <span class="detail-value">{{ booking.departure_time }}</span>
+                                </div>
+                                {% endif %}
+                                <div class="detail-item">
+                                    <span class="detail-label">Hành khách</span>
+                                    <span class="detail-value">{{ booking.passenger_name }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Số điện thoại</span>
+                                    <span class="detail-value">{{ booking.passenger_phone }}</span>
+                                </div>
+                            </div>
+
+                            <!-- ✅ FIX: Hiển thị ghế từ seat_list thay vì seat_numbers -->
+                            {% if booking.seat_list %}
+                            <div class="detail-item">
+                                <span class="detail-label">Ghế đã chọn</span>
+                                <div class="seats-display">
+                                    {% for seat in booking.seat_list %}
+                                    <span class="seat-tag">{{ seat }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="booking-summary">
+                            <div class="summary-row">
+                                <span class="summary-label">Số ghế:</span>
+                                <span class="summary-value">{{ booking.total_seats }}</span>
+                            </div>
+                            {% if booking.price_per_seat %}
+                            <div class="summary-row">
+                                <span class="summary-label">Giá/ghế:</span>
+                                <span class="summary-value">{{ "{:,.0f}".format(booking.price_per_seat) }}đ</span>
+                            </div>
+                            {% endif %}
+                            <div class="summary-row">
+                                <span class="summary-label">Thanh toán:</span>
+                                <span class="summary-value">
+                                    {% if booking.payment_method == 'cash' %}Tiền mặt
+                                    {% elif booking.payment_method == 'bank_transfer' %}Chuyển khoản
+                                    {% elif booking.payment_method == 'momo' %}Ví MoMo
+                                    {% elif booking.payment_method == 'vnpay' %}VNPay
+                                    {% else %}{{ booking.payment_method }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <span>Tổng cộng:</span>
+                                <span>{{ "{:,.0f}".format(booking.total_price) }}đ</span>
+                            </div>
+
+                            <div class="booking-actions">
+                                <a href="/booking/success/{{ booking.id }}" class="btn-action btn-view">
+                                    👁️ Xem chi tiết
+                                </a>
+                                {% if booking.booking_status not in ['cancelled', 'completed'] %}
+                                <button class="btn-action btn-cancel" onclick="cancelBooking({{ booking.id }}, '{{ booking.booking_code }}')">
+                                    ❌ Hủy vé
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🎫</div>
+                    <h2 class="empty-title">Chưa có vé nào</h2>
+                    <p class="empty-message">
+                        Bạn chưa đặt vé nào. Hãy tìm kiếm và đặt chuyến đi đầu tiên của bạn!
+                    </p>
+                    <a href="/" class="btn-book-now">
+                        🚌 Đặt vé ngay
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Filter bookings
+        function filterBookings(filter) {
+            const cards = document.querySelectorAll('.booking-card');
+            const tabs = document.querySelectorAll('.tab-btn');
+            
+            // Update active tab
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter cards
+            const today = new Date().toISOString().split('T')[0];
+            
+            cards.forEach(card => {
+                const status = card.dataset.status;
+                const date = card.dataset.date;
+                let show = false;
+                
+                switch(filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'upcoming':
+                        show = (status === 'confirmed' || status === 'pending') && date >= today;
+                        break;
+                    case 'completed':
+                        show = status === 'completed' || (date < today && status !== 'cancelled');
+                        break;
+                    case 'cancelled':
+                        show = status === 'cancelled';
+                        break;
+                }
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // Cancel booking
+        function cancelBooking(bookingId, bookingCode) {
+            if (confirm(`Bạn có chắc muốn hủy vé ${bookingCode}?\n\nLưu ý: Vé chỉ có thể hủy trước 24h để được hoàn tiền.`)) {
+                const reason = prompt('Lý do hủy vé (tùy chọn):');
+                
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/booking/cancel/${bookingId}`;
+                
+                const reasonInput = document.createElement('input');
+                reasonInput.type = 'hidden';
+                reasonInput.name = 'cancel_reason';
+                reasonInput.value = reason || 'Khách hàng hủy';
+                
+                form.appendChild(reasonInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
+</html>
