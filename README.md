@@ -15,7 +15,8 @@
 ## Hướng dẫn chạy
 ### 1. clone dự án
 git clone https://github.com/Thuan-fe004/web-banvexe.git
-#cd web-banvexe
+
+cd web-banvexe
 
 ### 2. Tạo môi trường ảo
 #### nếu dùng conda:
