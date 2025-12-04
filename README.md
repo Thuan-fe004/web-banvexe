@@ -21,10 +21,12 @@ cd web-banvexe
 ### 2. Tạo môi trường ảo
 #### nếu dùng conda:
 conda create -n bus_ticket python=3.11 -y
+
 conda activate bus_ticket
 
 #### Hoặc nếu dùng venv:
 python -m venv venv
+
 venv\Scripts\activate   
 
 ### 3. Cài các thư viện cần thiết
@@ -32,6 +34,7 @@ pip install -r requirements.txt
 
 ### 4. Tạo database và dữ liệu
 - mở mysql và tạo database:
+
   mysql -u root -p -e "CREATE DATABASE bus_ticket CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 #### Import toàn bộ dữ liệu mẫu
 mysql -u root -p bus_ticket < database.sql
