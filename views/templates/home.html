@@ -17,94 +17,272 @@
             min-height: 100vh;
         }
 
+        /* Navbar */
         .navbar {
-            background: white;
-            color: #333;
-            padding: 15px 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: #2874DB;
+            color: white;
+            padding: 12px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        .navbar h1 {
-            font-size: 24px;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #667eea;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background: white;
+            color: #2874DB;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .promo-banner {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            opacity: 0.8;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .user-name {
             font-size: 14px;
-            color: #666;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-logout {
-            background: #667eea;
-            color: white;
+            background: white;
+            color: #2874DB;
             border: none;
             padding: 8px 20px;
-            border-radius: 20px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
             font-size: 14px;
+            font-weight: 600;
         }
 
         .btn-logout:hover {
-            background: #5568d3;
+            background: #f0f0f0;
         }
 
-        /* Hero Section với ảnh nền */
-        .hero {
-            background: linear-gradient(rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9)), 
-                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1600') center/cover;
-            padding: 80px 20px 100px;
-            text-align: center;
+        /* Hotline Dropdown */
+        .hotline-dropdown {
             position: relative;
         }
 
-        .hero h2 {
-            color: white;
-            font-size: 42px;
-            margin-bottom: 15px;
-            font-weight: 700;
+        .hotline-btn {
+            background: white;
+            color: #2874DB;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
         }
 
-        .hero p {
-            color: rgba(255,255,255,0.95);
-            font-size: 20px;
-            margin-bottom: 40px;
+        .hotline-btn:hover {
+            background: #f0f0f0;
         }
 
-        /* Search Box giống ảnh */
-        .search-container {
-            max-width: 1200px;
-            margin: -60px auto 60px;
+        .hotline-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
             background: white;
             border-radius: 8px;
-            padding: 0;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 15px;
+            min-width: 320px;
+            z-index: 1000;
+        }
+
+        .hotline-menu::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+        }
+
+        .hotline-dropdown:hover .hotline-menu {
+            display: block;
+        }
+
+        .hotline-item {
+            display: block;
+            color: #2874DB;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-bottom: 5px;
+        }
+
+        .hotline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .hotline-item:hover {
+            background: #f0f7ff;
+        }
+
+        .hotline-number {
+            font-weight: 700;
+            font-size: 15px;
+            color: #2874DB;
+        }
+
+        .hotline-desc {
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(40, 116, 219, 0.95), rgba(70, 150, 230, 0.9)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1600') center/cover;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            color: white;
+            font-size: 56px;
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+
+        .hero-subtitle {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 50px;
+            font-weight: 700;
+            text-shadow: 1px 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 40px;
+        }
+
+        .hero-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .hero-feature-icon {
+            font-size: 36px;
+            margin-bottom: 5px;
+        }
+
+        .hero-feature-text {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Search Container */
+        .search-container {
+            max-width: 1200px;
+            margin: -80px auto 60px;
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
             position: relative;
             z-index: 10;
             overflow: hidden;
         }
 
-        .search-header {
-            background: white;
-            border-bottom: 3px solid #1e88e5;
-            padding: 0;
-        }
-
         .search-tabs {
             display: flex;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .tab-btn {
@@ -120,34 +298,42 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            font-weight: 500;
+            font-weight: 600;
             border-bottom: 3px solid transparent;
-            margin-bottom: -3px;
+            position: relative;
         }
 
         .tab-btn.active {
-            color: #1e88e5;
-            border-bottom-color: #1e88e5;
+            color: #2874DB;
+            border-bottom-color: #2874DB;
             background: white;
         }
 
-        .tab-btn:not(.active) {
-            opacity: 0.6;
+        .tab-badge {
+            position: absolute;
+            top: 8px;
+            right: 20px;
+            background: #FF6B35;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
         }
 
         .search-form {
             padding: 30px;
             display: grid;
-            grid-template-columns: 2fr auto 2fr 1.5fr auto;
+            grid-template-columns: 2.5fr auto 2.5fr 2fr auto;
             gap: 0;
-            align-items: center;
+            align-items: end;
             background: white;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            padding: 0 15px;
+            padding: 0 20px;
             position: relative;
         }
 
@@ -157,7 +343,7 @@
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            height: 40px;
+            height: 50px;
             width: 1px;
             background: #e0e0e0;
         }
@@ -167,19 +353,19 @@
         }
 
         .form-group label {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 8px;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .form-group input {
-            padding: 8px 0;
+            padding: 10px 0;
             border: none;
-            font-size: 16px;
+            font-size: 17px;
             outline: none;
             color: #333;
             font-weight: 600;
@@ -195,8 +381,8 @@
             background: white;
             border: 2px solid #e0e0e0;
             color: #666;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -204,23 +390,23 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 20px;
-            margin: 20px 10px 0;
+            margin: 0 10px 10px;
         }
 
         .swap-btn:hover {
-            border-color: #1e88e5;
-            color: #1e88e5;
+            border-color: #2874DB;
+            color: #2874DB;
             transform: rotate(180deg);
         }
 
         .btn-search {
-            background: #ffc107;
+            background: #FFC107;
             color: #333;
             border: none;
-            padding: 16px 40px;
+            padding: 16px 50px;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
             margin-left: 20px;
@@ -229,9 +415,9 @@
         }
 
         .btn-search:hover {
-            background: #ffb300;
+            background: #FFB300;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
         }
 
         /* Container */
@@ -251,7 +437,7 @@
             gap: 10px;
         }
 
-        /* Popular Routes Grid */
+        /* Routes Grid */
         .routes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -263,7 +449,7 @@
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             transition: all 0.3s;
             cursor: pointer;
             text-decoration: none;
@@ -272,15 +458,15 @@
         }
 
         .route-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            border-color: #1e88e5;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            border-color: #2874DB;
         }
 
         .route-image {
             width: 100%;
             height: 180px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2874DB 0%, #4E9CE6 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -300,11 +486,11 @@
             top: 15px;
             right: 15px;
             background: rgba(255,255,255,0.95);
-            color: #333;
+            color: #FF6B35;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             z-index: 1;
         }
 
@@ -317,9 +503,6 @@
             font-weight: 600;
             color: #333;
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .route-details {
@@ -333,7 +516,7 @@
 
         .route-price {
             font-size: 20px;
-            color: #dc3545;
+            color: #FF6B35;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -348,12 +531,12 @@
         }
 
         .discount-badge {
-            background: #dc3545;
+            background: #FF6B35;
             color: white;
             padding: 3px 8px;
             border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         /* Features Section */
@@ -362,7 +545,7 @@
             border-radius: 12px;
             padding: 50px 30px;
             margin-bottom: 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .features-grid {
@@ -394,6 +577,22 @@
         }
 
         @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 20px;
+            }
+
+            .navbar-left {
+                gap: 15px;
+            }
+
+            .promo-banner {
+                display: none;
+            }
+
+            .navbar-right {
+                gap: 15px;
+            }
+
             .search-form {
                 grid-template-columns: 1fr;
                 gap: 20px;
@@ -412,8 +611,16 @@
                 width: 100%;
             }
 
-            .hero h2 {
-                font-size: 28px;
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 20px;
+            }
+
+            .hero-features {
+                gap: 30px;
             }
 
             .section-title {
@@ -424,50 +631,105 @@
 </head>
 <body>
     <div class="navbar">
-        <h1>
-            <span>🚌</span>
-            Đặt vé xe khách
-        </h1>
-        <div class="user-info">
-            <span class="user-name">👤 Xin chào, {{ user.full_name if user.full_name else user.username }}</span>
-            <a href="/logout" class="btn-logout">Đăng xuất</a>
+        <div class="navbar-left">
+            <a href="/" class="logo">
+                <div class="logo-icon">🚌</div>
+                <span>Vexere</span>
+            </a>
+            <div class="promo-banner">
+                🎉 Cam kết hoàn 150% nếu nhà xe không cung cấp dịch vụ vận chuyển (*)
+            </div>
+        </div>
+        <div class="navbar-right">
+            <a href="/booking/my-bookings" class="nav-link">
+                📦 Đơn hàng của tôi
+            </a>
+          
+            <div class="hotline-dropdown">
+                <button class="hotline-btn">
+                    📞 Hotline 24/7
+                </button>
+                <div class="hotline-menu">
+                    <a href="tel:1900545541" class="hotline-item">
+                        <div class="hotline-number">0867845804</div>
+                        <div class="hotline-desc">Đề đặt dịch vụ thuê xe (Từ 07:00 - 21:00)</div>
+                    </a>
+                    <a href="tel:1900969681" class="hotline-item">
+                        <div class="hotline-number">0867845804</div>
+                        <div class="hotline-desc">Để phản hồi về dịch vụ và xử lý sự cố</div>
+                    </a>
+                    <a href="tel:1900888684" class="hotline-item">
+                        <div class="hotline-number">0867845804</div>
+                        <div class="hotline-desc">Để đặt vé qua điện thoại (24/7)</div>
+                    </a>
+                </div>
+            </div>
+            <div class="user-info">
+                <span class="user-name">👤 Xin chào, {{ user.full_name if user.full_name else user.username }}</span>
+                <a href="/logout" class="btn-logout">Đăng xuất</a>
+            </div>
         </div>
     </div>
 
     <div class="hero">
-        <h2>Đặt vé xe khách trực tuyến</h2>
-        <p>Nhanh chóng • Tiện lợi • An toàn</p>
+        <div class="hero-content">
+            <h1 class="hero-title">ĐẶT VEXE</h1>
+            <p class="hero-subtitle">TẾT CHẮC MỘT VÉ</p>
+            
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <div class="hero-feature-icon">✅</div>
+                    <div class="hero-feature-text">Chắc chân có chỗ</div>
+                </div>
+                <div class="hero-feature">
+                    <div class="hero-feature-icon">🎧</div>
+                    <div class="hero-feature-text">Hỗ trợ 24/7</div>
+                </div>
+                <div class="hero-feature">
+                    <div class="hero-feature-icon">🎁</div>
+                    <div class="hero-feature-text">Nhiều ưu đãi</div>
+                </div>
+                <div class="hero-feature">
+                    <div class="hero-feature-icon">💳</div>
+                    <div class="hero-feature-text">Thanh toán đa dạng</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="search-container">
-        <div class="search-header">
-            <div class="search-tabs">
-                <button class="tab-btn active">
-                    <span>🚌</span> Xe khách
-                </button>
-            </div>
+        <div class="search-tabs">
+            <button class="tab-btn active">
+                <span>🚌</span> Xe khách
+                <span class="tab-badge">20%</span>
+            </button>
+            
+            <button class="tab-btn">
+                <span>🏍️</span> Thuê xe
+                <span class="tab-badge">Mới</span>
+            </button>
         </div>
 
         <form class="search-form" method="GET" action="/search">
             <div class="form-group">
                 <label>
-                    <span style="color: #1e88e5;">📍</span> Nơi xuất phát
+                    <span style="color: #2874DB;">📍</span> Nơi xuất phát
                 </label>
-                <input type="text" name="departure" placeholder="Hà Nội" required list="cities-departure">
+                <input type="text" name="departure" placeholder="" required list="cities-departure">
             </div>
 
             <button type="button" class="swap-btn" onclick="swapLocations()" title="Đổi chiều">⇄</button>
 
             <div class="form-group">
                 <label>
-                    <span style="color: #dc3545;">📍</span> Nơi đến
+                    <span style="color: #FF6B35;">📍</span> Nơi đến
                 </label>
-                <input type="text" name="arrival" placeholder="Hải Phòng" required list="cities-arrival">
+                <input type="text" name="arrival" placeholder="" required list="cities-arrival">
             </div>
 
             <div class="form-group">
                 <label>
-                    <span style="color: #1e88e5;">📅</span> Ngày đi
+                    <span style="color: #2874DB;">📅</span> Ngày đi
                 </label>
                 <input type="date" name="date" required>
             </div>
@@ -520,11 +782,9 @@
                     {% endif %}
                 </div>
                 <div class="route-info">
-                    <div class="route-name">
-                        {{ route.route_name }}
-                    </div>
+                    <div class="route-name">{{ route.route_name }}</div>
                     <div class="route-details">
-                        <span>⏱️ {{ route.duration if route.duration else '~2h' }}</span>
+                        <span>⏱️ {{ route.duration }}</span>
                         <span>🎫 {{ route.trip_count }}+ chuyến/ngày</span>
                     </div>
                     <div class="route-price">
@@ -542,100 +802,13 @@
             </a>
             {% endfor %}
         {% else %}
-            <!-- Hiển thị routes tĩnh nếu chưa có data -->
-            <a href="/search?departure=Hà Nội&arrival=Hải Phòng&date={{ today }}" class="route-card">
-                <div class="route-image">
-                    🚌
-                    <div class="route-badge">⚡ Nhanh nhất</div>
-                </div>
-                <div class="route-info">
-                    <div class="route-name">Hà Nội → Hải Phòng</div>
-                    <div class="route-details">
-                        <span>⏱️ ~2h30m</span>
-                        <span>🎫 20+ chuyến/ngày</span>
-                    </div>
-                    <div class="route-price">Từ 108.000đ</div>
-                </div>
-            </a>
-
-            <a href="/search?departure=TP. Hồ Chí Minh&arrival=Đà Lạt&date={{ today }}" class="route-card">
-                <div class="route-image">
-                    🚌
-                    <div class="route-badge">🔥 Giảm 20%</div>
-                </div>
-                <div class="route-info">
-                    <div class="route-name">TP.HCM → Đà Lạt</div>
-                    <div class="route-details">
-                        <span>⏱️ ~6h</span>
-                        <span>🎫 15+ chuyến/ngày</span>
-                    </div>
-                    <div class="route-price">
-                        Từ 144.000đ
-                        <span class="old-price">180.000đ</span>
-                        <span class="discount-badge">-20%</span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="/search?departure=TP. Hồ Chí Minh&arrival=Nha Trang&date={{ today }}" class="route-card">
-                <div class="route-image">
-                    🚌
-                    <div class="route-badge">💎 Siêu sale</div>
-                </div>
-                <div class="route-info">
-                    <div class="route-name">TP.HCM → Nha Trang</div>
-                    <div class="route-details">
-                        <span>⏱️ ~8h</span>
-                        <span>🎫 12+ chuyến/ngày</span>
-                    </div>
-                    <div class="route-price">
-                        Từ 279.000đ
-                        <span class="old-price">450.000đ</span>
-                        <span class="discount-badge">-38%</span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="/search?departure=Hà Nội&arrival=Đà Nẵng&date={{ today }}" class="route-card">
-                <div class="route-image">🚌</div>
-                <div class="route-info">
-                    <div class="route-name">Hà Nội → Đà Nẵng</div>
-                    <div class="route-details">
-                        <span>⏱️ ~14h</span>
-                        <span>🎫 10+ chuyến/ngày</span>
-                    </div>
-                    <div class="route-price">Từ 350.000đ</div>
-                </div>
-            </a>
-
-            <a href="/search?departure=Hà Nội&arrival=Vinh&date={{ today }}" class="route-card">
-                <div class="route-image">🚌</div>
-                <div class="route-info">
-                    <div class="route-name">Hà Nội → Vinh</div>
-                    <div class="route-details">
-                        <span>⏱️ ~5h</span>
-                        <span>🎫 18+ chuyến/ngày</span>
-                    </div>
-                    <div class="route-price">Từ 180.000đ</div>
-                </div>
-            </a>
-
-            <a href="/search?departure=Đà Nẵng&arrival=Hội An&date={{ today }}" class="route-card">
-                <div class="route-image">
-                    🚌
-                    <div class="route-badge">⭐ Phổ biến</div>
-                </div>
-                <div class="route-info">
-                    <div class="route-name">Đà Nẵng → Hội An</div>
-                    <div class="route-details">
-                        <span>⏱️ ~1h</span>
-                        <span>🎫 30+ chuyến/ngày</span>
-                    </div>
-                    <div class="route-price">Từ 50.000đ</div>
-                </div>
-            </a>
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #999;">
+                <div style="font-size: 64px; margin-bottom: 20px;">🚌</div>
+                <h3 style="font-size: 20px; color: #666; margin-bottom: 10px;">Chưa có tuyến đường phổ biến</h3>
+                <p style="font-size: 14px;">Vui lòng thử lại sau hoặc tìm kiếm chuyến xe bạn cần</p>
+            </div>
         {% endif %}
-    </div>
+        </div>
 
         <div class="features">
             <h2 class="section-title">✨ Tại sao chọn chúng tôi?</h2>
@@ -670,14 +843,6 @@
         const today = new Date().toISOString().split('T')[0];
         dateInput.min = today;
         dateInput.value = today;
-
-        // Format date display
-        dateInput.addEventListener('change', function() {
-            const date = new Date(this.value);
-            const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-            const dayName = dayNames[date.getDay()];
-            console.log(`${dayName}, ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`);
-        });
 
         // Swap locations function
         function swapLocations() {

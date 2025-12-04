@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê & Báo cáo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            font-size: 24px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chart-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 18px;
+        }
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>📈 Thống kê & Báo cáo</h1>
+       
+        <a href="/admin">← Quay lại Dashboard</a>
+    </div>
+
+    <div class="container">
+        <!-- Biểu đồ -->
+        <div class="chart-grid">
+            <!-- Thống kê theo ngày trong tuần -->
+            <div class="chart-container">
+                <h2>📅 Đặt vé theo ngày trong tuần</h2>
+                <canvas id="dailyChart"></canvas>
+            </div>
+
+            <!-- Thống kê theo giờ -->
+            <div class="chart-container">
+                <h2>⏰ Đặt vé theo giờ trong ngày</h2>
+                <canvas id="hourlyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Trạng thái đặt vé -->
+        <div class="chart-grid">
+            <div class="chart-container">
+                <h2>📊 Tỷ lệ trạng thái đặt vé</h2>
+                <canvas id="statusChart"></canvas>
+                <div style="margin-top: 20px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Trạng thái</th>
+                                <th>Số lượng</th>
+                                <th>Tỷ lệ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in status_stats %}
+                            <tr>
+                                <td>
+                                    {% if stat.status == 'confirmed' %}
+                                        <span class="badge badge-success">Đã xác nhận</span>
+                                    {% elif stat.status == 'pending' %}
+                                        <span class="badge badge-warning">Chờ xử lý</span>
+                                    {% elif stat.status == 'cancelled' %}
+                                        <span class="badge badge-danger">Đã hủy</span>
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ stat.count }}</strong></td>
+                                <td>{{ stat.percentage }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h2>🚌 Thống kê theo nhà xe</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nhà xe</th>
+                            <th>Số chuyến</th>
+                            <th>Vé đã bán</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in company_stats %}
+                        <tr>
+                            <td><strong>{{ company.bus_company }}</strong></td>
+                            <td>{{ company.total_trips or 0 }}</td>
+                            <td>{{ company.total_bookings or 0 }}</td>
+                            <td><strong>{{ "{:,.0f}".format(company.revenue or 0) }}đ</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Biểu đồ theo ngày trong tuần
+        const dailyData = {{ daily_stats | tojson }};
+        const dayNames = {
+            'Monday': 'Thứ 2',
+            'Tuesday': 'Thứ 3',
+            'Wednesday': 'Thứ 4',
+            'Thursday': 'Thứ 5',
+            'Friday': 'Thứ 6',
+            'Saturday': 'Thứ 7',
+            'Sunday': 'Chủ nhật'
+        };
+        const dailyLabels = dailyData.map(item => dayNames[item.day_name] || item.day_name);
+        const dailyBookings = dailyData.map(item => item.bookings);
+
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'bar',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Số vé đặt',
+                    data: dailyBookings,
+                    backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Biểu đồ theo giờ
+        const hourlyData = {{ hourly_stats | tojson }};
+        const hourlyLabels = hourlyData.map(item => item.hour + 'h');
+        const hourlyBookings = hourlyData.map(item => item.bookings);
+
+        new Chart(document.getElementById('hourlyChart'), {
+            type: 'line',
+            data: {
+                labels: hourlyLabels,
+                datasets: [{
+                    label: 'Số vé đặt',
+                    data: hourlyBookings,
+                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Biểu đồ trạng thái
+        const statusData = {{ status_stats | tojson }};
+        const statusLabels = statusData.map(item => {
+            if (item.status === 'confirmed') return 'Đã xác nhận';
+            if (item.status === 'pending') return 'Chờ xử lý';
+            if (item.status === 'cancelled') return 'Đã hủy';
+            return item.status;
+        });
+        const statusCounts = statusData.map(item => item.count);
+
+        new Chart(document.getElementById('statusChart'), {
+            type: 'pie',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusCounts,
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

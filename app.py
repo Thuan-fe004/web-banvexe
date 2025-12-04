@@ -20,7 +20,7 @@ from controllers.trip_controller import trip_bp
 from controllers.booking_controller import booking_bp  
 from controllers.admin_bookings_controller import admin_bookings_bp
 from controllers.bus_controller import bus_bp
-
+from controllers.revenue_controller import revenue_bp
 
 def create_app(config_name='development'):
     """
@@ -93,7 +93,7 @@ def create_app(config_name='development'):
     app.register_blueprint(booking_bp)
     app.register_blueprint(admin_bookings_bp)
     app.register_blueprint(bus_bp)
-    
+    app.register_blueprint(revenue_bp)
     # Tạo admin mặc định
     with app.app_context():
         create_default_admin()
