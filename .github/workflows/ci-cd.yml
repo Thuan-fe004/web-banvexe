@@ -10,15 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    services:
-      # Dùng Chrome để chạy test (headless)
-      chrome:
-        image: selenium/standalone-chrome:latest
-        ports:
-          - 4444:4444
-        options: --health-cmd="curl -f http://localhost:4444/wd/hub || exit 1" --health-interval=10s --health-timeout=5s --health-retries=3
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -28,28 +20,38 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest allure-pytest selenium webdriver-manager
+          pip install pytest allure-pytest selenium webdriver-manager pytest-html
 
-      - name: Run Flask app in background
+      - name: Install Allure CLI
         run: |
-          nohup python app.py &
-          sleep 10  # Đợi Flask khởi động
+          wget https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.tgz
+          tar -zxvf allure-2.30.0.tgz
+          sudo mv allure-2.30.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          allure --version
 
-      - name: Run Automation Tests
+      - name: Start Flask app
         run: |
-          pytest tests/test_cases/test_booking_complete.py --alluredir=allure-results -v
+          nohup python app.py > flask.log 2>&1 &
+          sleep 15
+          cat flask.log
+
+      - name: Run Tests
+        run: |
+          pytest tests/test_cases/ --alluredir=allure-results -v
 
       - name: Generate Allure Report
         if: always()
         run: |
           allure generate allure-results --clean -o allure-report
 
-      - name: Upload Allure Report as Artifact
+      - name: Upload Allure Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -57,9 +59,10 @@ jobs:
           path: allure-report
           retention-days: 30
 
-      - name: Deploy Allure Report to GitHub Pages (tùy chọn)
+      - name: Deploy to GitHub Pages
         if: success()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
+          force_orphan: true
