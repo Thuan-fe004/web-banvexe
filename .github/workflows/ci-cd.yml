@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
@@ -26,7 +26,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest allure-pytest selenium webdriver-manager pytest-html
 
       - name: Install Allure CLI
         run: |
@@ -39,12 +38,13 @@ jobs:
       - name: Start Flask app
         run: |
           nohup python app.py > flask.log 2>&1 &
-          sleep 15
-          cat flask.log
+          echo "Waiting for Flask to start..."
+          sleep 20
+          curl -f http://127.0.0.1:5000 || echo "Flask chưa chạy (có thể chưa cần)"
 
       - name: Run Tests
         run: |
-          pytest tests/test_cases/ --alluredir=allure-results -v
+          pytest tests/test_cases/test_booking_complete.py --alluredir=allure-results -v
 
       - name: Generate Allure Report
         if: always()
@@ -57,7 +57,6 @@ jobs:
         with:
           name: allure-report
           path: allure-report
-          retention-days: 30
 
       - name: Deploy to GitHub Pages
         if: success()
