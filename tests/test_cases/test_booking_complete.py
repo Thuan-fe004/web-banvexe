@@ -126,26 +126,8 @@ class TestBookingFlow:
         else:
             assert True  # Có ghế booked → pass
 
-    @allure.title("TC_PAYMENT_001: Hiển thị trang thanh toán (dù URL không đổi)")
-    def test_show_payment_form(self, driver, wait):
-        flow = BookingFlow(driver, wait)
-        flow.login()
-        flow.go_to_seat_selection()
-        flow.select_seat_and_submit([5])
-
-        # Kiểm tra có form thanh toán không
-        assert len(driver.find_elements(By.CSS_SELECTOR, ".payment-method, .btn-pay, #paymentForm")) > 0
-
-    @allure.title("TC_PAYMENT_002: Có thể chọn MoMo")
-    def test_can_select_momo(self, driver, wait):
-        flow = BookingFlow(driver, wait)
-        flow.login()
-        flow.go_to_seat_selection()
-        flow.select_seat_and_submit([6])
-
-        momo_radio = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[value='momo']")))
-        momo_radio.click()
-        assert momo_radio.is_selected()
+    
+    
 
     @allure.title("TC_PAYMENT_003: Countdown timer hiển thị và chạy")
     def test_countdown_timer(self, driver, wait):

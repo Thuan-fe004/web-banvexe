@@ -1,0 +1,1 @@
+{"name": "TC_PAYMENT_003: Countdown timer chạy", "status": "passed", "start": 1765448236397, "stop": 1765448260823, "uuid": "808e5af7-4ea7-4702-b5ee-1b7698f756d3", "testCaseId": "1d99db91e1917321eeffa0a29ca27228", "fullName": "tests.test_cases.test_booking_complete.TestBookingFlow#test_countdown"}
