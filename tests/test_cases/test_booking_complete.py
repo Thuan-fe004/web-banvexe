@@ -27,29 +27,39 @@ SEARCH_PARAMS = {
 }
 
 def get_driver():
-    """Chạy ngon 100% trên Windows (của bạn) + Linux (GitHub Actions)"""
+    """Chạy xanh 100% trên GitHub Actions (Linux) + Windows local – fix lỗi THIRD_PARTY_NOTICES"""
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
     from selenium.webdriver.chrome.service import Service
     from webdriver_manager.chrome import ChromeDriverManager
+    import os
 
     options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-extensions")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    # Nếu chạy trên GitHub Actions → bật headless
-    if os.environ.get("CI") == "true" or "GITHUB_ACTIONS" in os.environ:
-        options.add_argument("--headless=new")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--window-size=1920,1080")
-    else:
-        # Chạy local trên Windows của bạn → không cần headless (để bạn xem được)
-        pass
+    # FIX CHÍNH: Tìm file chromedriver thật (không phải file text)
+    driver_path = ChromeDriverManager().install()
+    driver_dir = os.path.dirname(driver_path)
 
-    # Cách chuẩn nhất: để webdriver-manager tự tìm file đúng (Windows: .exe, Linux: không đuôi)
-    service = Service(ChromeDriverManager().install())
+    import glob
+    # Tìm file thực thi đúng (trên Linux là chromedriver, không có .exe)
+    real_files = glob.glob(os.path.join(driver_dir, "**", "chromedriver*"), recursive=True)
+    real_files = [f for f in real_files if os.path.isfile(f) and "THIRD_PARTY_NOTICES" not in f and not f.endswith(".zip")]
+
+    if not real_files:
+        raise FileNotFoundError("Không tìm thấy file chromedriver thực thi!")
+
+    real_path = real_files[0]
+    print(f"Đã dùng ChromeDriver thật: {real_path}")
+
+    service = Service(executable_path=real_path)
     driver = webdriver.Chrome(service=service, options=options)
-    driver.maximize_window()
     driver.implicitly_wait(10)
     return driver
 
