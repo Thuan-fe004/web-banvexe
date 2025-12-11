@@ -1,0 +1,22 @@
+{
+  "valid_user": {
+    "username": "Thuan2004",
+    "password": "1"
+  },
+  "admin_user": {
+    "username": "admin@123",
+    "password": "Admin123@"
+  },
+  "invalid_user": {
+    "username": "wronguser",
+    "password": "wrongpass"
+  },
+  "register_data": {
+    "full_name": "Nguyễn Văn Test",
+    "username": "testuser_new",
+    "email": "test@example.com",
+    "phone": "0912345678",
+    "address": "123 Đường Test, Quận 1, TP.HCM",
+    "password": "test123456"
+  }
+}

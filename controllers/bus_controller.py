@@ -395,4 +395,31 @@ def view(bus_id):
         flash('❌ Không tìm thấy xe!', 'danger')
         return redirect(url_for('buses.index'))
     
+    # ✅ XỬ LÝ CONVERSION CHO last_maintenance_date
+    if bus.get('last_maintenance_date'):
+        if isinstance(bus['last_maintenance_date'], str):
+            try:
+                # Thử nhiều format có thể
+                for fmt in ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y']:
+                    try:
+                        bus['last_maintenance_date'] = datetime.strptime(bus['last_maintenance_date'], fmt)
+                        break
+                    except:
+                        continue
+            except:
+                bus['last_maintenance_date'] = None
+    
+    # ✅ XỬ LÝ CONVERSION CHO next_maintenance_date
+    if bus.get('next_maintenance_date'):
+        if isinstance(bus['next_maintenance_date'], str):
+            try:
+                for fmt in ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y']:
+                    try:
+                        bus['next_maintenance_date'] = datetime.strptime(bus['next_maintenance_date'], fmt)
+                        break
+                    except:
+                        continue
+            except:
+                bus['next_maintenance_date'] = None
+    
     return render_template('bus_detail.html', bus=bus, user=current_user)

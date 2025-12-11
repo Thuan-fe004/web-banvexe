@@ -1,0 +1,1 @@
+{"name": "TC_SORT_002: Sắp xếp theo giờ đi sớm nhất", "status": "skipped", "description": "Test sắp xếp theo giờ", "start": 1765415869079, "stop": 1765415869079, "uuid": "48b33f02-d6ea-4f72-8c4c-b0a36e36050c", "testCaseId": "caff1b2b836ac4aa38dd75079a647761", "fullName": "tests.test_cases.test_search_complete.TestSorting#test_sort_by_time"}

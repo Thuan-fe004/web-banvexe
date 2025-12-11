@@ -1,0 +1,1 @@
+{"name": "TC_FILTER_002: Lọc theo loại xe Limousine", "status": "skipped", "description": "Test lọc theo loại xe", "start": 1765412108547, "stop": 1765412108547, "uuid": "cfffaabe-76c6-4de5-b561-bd06346351d9", "testCaseId": "5f760178c1dea9cc7a78199b762628e8", "fullName": "tests.test_cases.test_search_complete.TestFilters#test_filter_by_limousine"}

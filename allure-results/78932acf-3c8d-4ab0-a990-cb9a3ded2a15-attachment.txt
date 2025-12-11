@@ -1,0 +1,2 @@
+ChromeDriver: C:\Users\thuan\.wdm\drivers\chromedriver\win64\142.0.7444.175\chromedriver-win32\chromedriver.exe
+Chưa có ghế booked → bỏ qua test này

@@ -79,3 +79,12 @@ config = {
     'testing': TestingConfig,
     'default': DevelopmentConfig
 }
+# config.py - Thêm TestConfig
+class TestConfig:
+    """Configuration cho testing"""
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # In-memory database
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = 'test-secret-key'
+    WTF_CSRF_ENABLED = False
+    DEBUG = False

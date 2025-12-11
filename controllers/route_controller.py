@@ -38,6 +38,7 @@ def add_route():
     description = request.form.get('description', '').strip()
     
     # Validate
+    
     if not departure_point or not arrival_point:
         flash('Vui lòng điền đầy đủ điểm đi và điểm đến!', 'danger')
         return redirect(url_for('routes.list_routes'))
