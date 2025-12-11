@@ -27,26 +27,30 @@ SEARCH_PARAMS = {
 }
 
 def get_driver():
-    driver_path = ChromeDriverManager().install()
-    driver_dir = os.path.dirname(driver_path)
-    
-    exe_files = glob.glob(os.path.join(driver_dir, "**", "chromedriver*.exe"), recursive=True)
-    if not exe_files:
-        exe_files = [os.path.join(driver_dir, f) for f in os.listdir(driver_dir) if f.lower().endswith(".exe")]
-    
-    real_path = exe_files[0]
-    print(f"ChromeDriver: {real_path}")
+    """Chạy ngon 100% trên Windows (của bạn) + Linux (GitHub Actions)"""
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
 
-    options = ChromeOptions()
-    if Config.HEADLESS:
+    options = Options()
+
+    # Nếu chạy trên GitHub Actions → bật headless
+    if os.environ.get("CI") == "true" or "GITHUB_ACTIONS" in os.environ:
         options.add_argument("--headless=new")
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+    else:
+        # Chạy local trên Windows của bạn → không cần headless (để bạn xem được)
+        pass
 
-    service = ChromeService(executable_path=real_path)
+    # Cách chuẩn nhất: để webdriver-manager tự tìm file đúng (Windows: .exe, Linux: không đuôi)
+    service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
-    driver.implicitly_wait(Config.IMPLICIT_WAIT)
+    driver.maximize_window()
+    driver.implicitly_wait(10)
     return driver
 
 @pytest.fixture(scope="function")
